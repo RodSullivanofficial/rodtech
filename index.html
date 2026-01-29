@@ -31,7 +31,7 @@
             z-index: 2;
         }
 
-        /* LOGO BUTTON */
+        /* LOGO */
         .logo-button {
             display: inline-block;
             margin-bottom: 30px;
@@ -51,7 +51,6 @@
         .logo-button:hover {
             transform: scale(1.08);
             box-shadow: 0 0 45px rgba(0, 200, 255, 0.7);
-            background: rgba(255, 255, 255, 0.15);
         }
 
         h1 {
@@ -67,6 +66,33 @@
             opacity: 0.85;
         }
 
+        /* DISCORD BUTTON */
+        .discord-btn {
+            display: inline-block;
+            margin-top: 35px;
+            padding: 16px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #5865F2, #00c6ff);
+            box-shadow: 0 0 25px rgba(88, 101, 242, 0.8);
+            animation: pulse 2s infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .discord-btn:hover {
+            transform: scale(1.12);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(88, 101, 242, 0.7); }
+            50% { box-shadow: 0 0 45px rgba(88, 101, 242, 1); }
+            100% { box-shadow: 0 0 20px rgba(88, 101, 242, 0.7); }
+        }
+
         .copyright {
             position: absolute;
             bottom: 15px;
@@ -74,41 +100,40 @@
             text-align: center;
             font-size: 0.8rem;
             opacity: 0.6;
-            z-index: 2;
         }
 
-        /* SNOWFLAKES */
+        /* SNOW */
         .snowflake {
             position: fixed;
             top: -10px;
             color: white;
-            user-select: none;
             pointer-events: none;
             animation: fall linear infinite;
         }
 
         @keyframes fall {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- LOGO AS BUTTON -->
-        <a href="#" class="logo-button">
+
+        <!-- LOGO -->
+        <a href="https://rodsullivanofficial.github.io/rodtech" class="logo-button">
             <img src="rodtech-logo.png" alt="RodTECH Logo">
         </a>
 
         <h1>Coming Soon</h1>
-        <p>Something amazing is on the way ❄️</p>
+        <p>Something exciting is on the way ❄️</p>
+
+        <!-- DISCORD BUTTON -->
+        <a href="https://rodsullivanofficial.github.io/rodtech/discord" target="_blank" class="discord-btn">
+            JOIN OUR DISCORD
+        </a>
+
     </div>
 
     <div class="copyright">
@@ -122,12 +147,10 @@
             const snowflake = document.createElement('div');
             snowflake.className = 'snowflake';
             snowflake.innerHTML = '❄';
-
             snowflake.style.left = Math.random() * 100 + 'vw';
             snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
             snowflake.style.animationDuration = Math.random() * 5 + 5 + 's';
             snowflake.style.animationDelay = Math.random() * 5 + 's';
-
             document.body.appendChild(snowflake);
         }
     </script>
