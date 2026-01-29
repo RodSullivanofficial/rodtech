@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Discord Server | RodTECH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 2;
+        }
+
+        /* LOGO BUTTON */
+        .logo-button {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px rgba(0, 170, 255, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .logo-button img {
+            height: 80px;
+            user-select: none;
+        }
+
+        .logo-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 45px rgba(0, 200, 255, 0.7);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.35);
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            opacity: 0.85;
+        }
+
+        /* JOIN NOW BUTTON */
+        .join-btn {
+            display: inline-block;
+            margin-top: 35px;
+            padding: 15px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #5865F2, #00c6ff);
+            box-shadow: 0 0 20px rgba(88, 101, 242, 0.7);
+            animation: pulse 2s infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .join-btn:hover {
+            transform: scale(1.12);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 20px rgba(88, 101, 242, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(88, 101, 242, 1);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(88, 101, 242, 0.7);
+            }
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            z-index: 2;
+        }
+
+        /* SNOWFLAKES */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: white;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- LOGO -->
+        <a href="https://rodsullivanofficial.github.io/rodtech" class="logo-button">
+            <img src="rodtech-logo.png" alt="RodTECH Logo">
+        </a>
+
+        <h1>Discord Server</h1>
+        <p>Join our community and stay connected ❄️</p>
+
+        <!-- JOIN NOW BUTTON -->
+        <a href="https://discord.gg/thDTHRkRcm" target="_blank" class="join-btn">
+            JOIN NOW
+        </a>
+
+    </div>
+
+    <div class="copyright">
+        © 2026 RodTECH – All rights reserved
+    </div>
+
+    <script>
+        const snowflakesCount = 60;
+
+        for (let i = 0; i < snowflakesCount; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            snowflake.style.animationDuration = Math.random() * 5 + 5 + 's';
+            snowflake.style.animationDelay = Math.random() * 5 + 's';
+
+            document.body.appendChild(snowflake);
+        }
+    </script>
+
+</body>
+</html>
