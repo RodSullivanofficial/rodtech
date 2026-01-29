@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Coming Soon | RodTECH</title>
@@ -31,17 +31,40 @@
             z-index: 2;
         }
 
+        /* LOGO BUTTON */
+        .logo-button {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px rgba(0, 170, 255, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .logo-button img {
+            height: 80px;
+            user-select: none;
+        }
+
+        .logo-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 45px rgba(0, 200, 255, 0.7);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         h1 {
             font-size: 4rem;
             font-weight: 600;
             letter-spacing: 4px;
-            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+            text-shadow: 0 0 20px rgba(255,255,255,0.35);
         }
 
         p {
             margin-top: 15px;
             font-size: 1.2rem;
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
         .copyright {
@@ -54,12 +77,11 @@
             z-index: 2;
         }
 
-        /* Snowflakes */
+        /* SNOWFLAKES */
         .snowflake {
             position: fixed;
             top: -10px;
             color: white;
-            font-size: 1em;
             user-select: none;
             pointer-events: none;
             animation: fall linear infinite;
@@ -80,12 +102,17 @@
 <body>
 
     <div class="container">
+        <!-- LOGO AS BUTTON -->
+        <a href="#" class="logo-button">
+            <img src="rodtech-logo.png" alt="RodTECH Logo">
+        </a>
+
         <h1>Coming Soon</h1>
-        <p>Wait for the Site ❄️</p>
+        <p>Something amazing is on the way ❄️</p>
     </div>
 
     <div class="copyright">
-        © 2026 RodTECH – Copyright
+        © 2026 RodTECH – All rights reserved
     </div>
 
     <script>
