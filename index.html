@@ -27,35 +27,30 @@
         }
 
         /* BIG LOGO TOP LEFT */
-.logo-top {
-    position: fixed;
-    top: 25px;
-    left: 25px;
-    z-index: 10;
-    text-decoration: none;
-}
+        .logo-top {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 10;
+            text-decoration: none;
+        }
 
-.logo-top img {
-    height: 120px; /* DUŻE LOGO */
-    padding: 20px 28px;
+        .logo-top img {
+            height: 120px; /* DUŻE LOGO */
+            padding: 20px 28px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            border-radius: 26px;
+            border: 2px solid rgba(0, 200, 255, 0.6);
+            box-shadow: 0 0 35px rgba(0, 200, 255, 0.7);
+            transition: all 0.3s ease;
+        }
 
-    /* GLASS + TRANSPARENT */
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(14px);
-    border-radius: 26px;
-    border: 2px solid rgba(0, 200, 255, 0.6);
-
-    /* GLOW */
-    box-shadow: 0 0 35px rgba(0, 200, 255, 0.7);
-    transition: all 0.3s ease;
-}
-
-.logo-top img:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 65px rgba(0, 220, 255, 1);
-}
-
+        .logo-top img:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 65px rgba(0, 220, 255, 1);
+        }
 
         .container {
             text-align: center;
@@ -92,7 +87,25 @@
             transition: transform 0.3s ease;
         }
 
-        .discord-btn:hover {
+        /* BLOG BUTTON */
+        .blog-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 18px 55px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #00ffd5, #00c6ff);
+            box-shadow: 0 0 30px rgba(0, 255, 213, 0.8);
+            animation: pulse 2s infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .discord-btn:hover,
+        .blog-btn:hover {
             transform: scale(1.12);
         }
 
@@ -137,10 +150,16 @@
         <h1>Coming Soon</h1>
         <p>Something exciting is on the way ❄️</p>
 
+        <!-- Discord Button -->
         <a href="https://rodsullivanofficial.github.io/rodtech/discord"
            target="_blank"
            class="discord-btn">
            JOIN OUR DISCORD FOR SNEAK PEAKS
+        </a>
+
+        <!-- Blog Button -->
+        <a href="https://rodsullivanofficial.github.io/rodtech/blogs.html" class="blog-btn">
+            VISIT MY BLOG
         </a>
     </div>
 
@@ -150,7 +169,6 @@
 
     <script>
         const snowflakesCount = 60;
-
         for (let i = 0; i < snowflakesCount; i++) {
             const snowflake = document.createElement('div');
             snowflake.className = 'snowflake';
