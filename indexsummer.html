@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RodTECH | Coming Soon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+            background: #000;
+        }
+
+        /* BACKGROUND IMAGE */
+        .background {
+    position: fixed;
+    inset: 0;
+    background: url("background.jpg") center / cover no-repeat;
+    z-index: -2;
+}
+
+
+        /* DARK OVERLAY */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: -1;
+        }
+
+        /* NO IMAGE FALLBACK */
+        .no-image {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            letter-spacing: 6px;
+            opacity: 0.4;
+        }
+
+        /* LOGO TOP LEFT */
+        .logo-top {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 10;
+        }
+
+        .logo-top img {
+            height: 120px;
+            padding: 20px 28px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            border-radius: 26px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .logo-top img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 70px rgba(255, 255, 255, 1);
+        }
+
+        /* CENTER CONTENT */
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4rem;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* DISCORD BUTTON */
+        .discord-btn {
+            margin-top: 40px;
+            padding: 18px 55px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
+            animation: pulse 2s infinite;
+            transition: all 0.3s ease;
+        }
+
+        .discord-btn:hover {
+            transform: scale(1.12);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 60px rgba(255, 255, 255, 1);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 25px rgba(255,255,255,0.7); }
+            50% { box-shadow: 0 0 55px rgba(255,255,255,1); }
+            100% { box-shadow: 0 0 25px rgba(255,255,255,0.7); }
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND -->
+    <div class="background"></div>
+    <div class="overlay"></div>
+    <div class="no-image">NO IMAGE</div>
+
+    <!-- LOGO -->
+    <a href="https://rodsullivanofficial.github.io/rodtech/discord"
+       target="_blank"
+       class="logo-top">
+        <img src="rodtech-logo.png" alt="RodTECH Logo">
+    </a>
+
+    <!-- CENTER -->
+    <div class="container">
+        <h1>Coming Soon</h1>
+        <p>JOIN OUR DISCORD FOR SNEAK PEAKS</p>
+
+        <a href="https://rodsullivanofficial.github.io/rodtech/discord"
+           target="_blank"
+           class="discord-btn">
+            JOIN NOW
+        </a>
+    </div>
+
+    <div class="copyright">
+        © 2026 RodTECH – All rights reserved
+    </div>
+
+    <!-- FALLBACK SCRIPT -->
+    <script>
+        const bg = new Image();
+        bg.src = "background.jpg";
+
+        bg.onerror = () => {
+            document.querySelector(".background").style.display = "none";
+            document.querySelector(".overlay").style.display = "none";
+            document.querySelector(".no-image").style.display = "flex";
+        };
+    </script>
+
+</body>
+</html>

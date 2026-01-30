@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RodTECH | Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    overflow-x: hidden;
+}
+
+/* LOGO */
+.logo-top {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    z-index: 10;
+}
+
+.logo-top img {
+    height: 110px;
+    padding: 18px 26px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    border-radius: 26px;
+    border: 2px solid rgba(255,255,255,0.6);
+    box-shadow: 0 0 40px rgba(255,255,255,0.8);
+}
+
+/* BLOG */
+.blog-container {
+    max-width: 900px;
+    margin: 160px auto 80px;
+    padding: 0 20px;
+}
+
+.blog-container h1 {
+    font-size: 3rem;
+    text-align: center;
+    letter-spacing: 3px;
+    margin-bottom: 50px;
+}
+
+/* CLICKABLE POST */
+.post {
+    display: block;
+    text-decoration: none;
+    color: white;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 35px;
+
+    box-shadow: 0 0 30px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+}
+
+.post:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 45px rgba(255,255,255,0.8);
+}
+
+.post h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.post .date {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    margin-bottom: 15px;
+}
+
+.post p {
+    line-height: 1.7;
+    opacity: 0.9;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    margin-bottom: 20px;
+}
+
+/* SNOW */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    color: white;
+    pointer-events: none;
+    animation: fall linear infinite;
+    opacity: 0.9;
+}
+
+@keyframes fall {
+    to { transform: translateY(110vh); }
+}
+</style>
+</head>
+
+<body>
+
+<a href="index.html" class="logo-top">
+    <img src="rodtech-logo.png" alt="RodTECH Logo">
+</a>
+
+<div class="blog-container">
+    <h1>RodTECH Blog</h1>
+
+    <a href="post1.html" class="post">
+        <h2>Welcome to the RodTECH Blog</h2>
+        <div class="date">January 2026</div>
+        <p>
+            This is the official RodTECH blog. Click to read more.
+        </p>
+    </a>
+
+    <a href="NotFound.html" class="post">
+        <h2>Coming Soon!</h2>
+        <div class="date">??/??/????</div>
+        <p>
+            Coming Soon!
+        </p>
+    </a>
+
+      <a href="NotFound.html" class="post">
+        <h2>Coming Soon!</h2>
+        <div class="date">??/??/????</div>
+        <p>
+            Coming Soon!
+        </p>
+    </a>
+</div>
+
+<footer>
+    © 2026 RodTECH – All rights reserved
+</footer>
+
+<script>
+for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'snowflake';
+    s.innerHTML = '❄';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.fontSize = Math.random() * 10 + 10 + 'px';
+    s.style.animationDuration = Math.random() * 5 + 6 + 's';
+    s.style.animationDelay = Math.random() * 5 + 's';
+    document.body.appendChild(s);
+}
+</script>
+
+</body>
+</html>

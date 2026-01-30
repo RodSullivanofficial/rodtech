@@ -26,40 +26,31 @@
             color: white;
         }
 
-        /* BIG LOGO TOP LEFT */
-.logo-top {
-    position: fixed;
-    top: 25px;
-    left: 25px;
-    z-index: 10;
-    text-decoration: none;
-}
-
-.logo-top img {
-    height: 120px; /* DUŻE LOGO */
-    padding: 20px 28px;
-
-    /* GLASS + TRANSPARENT */
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(14px);
-    border-radius: 26px;
-    border: 2px solid rgba(0, 200, 255, 0.6);
-
-    /* GLOW */
-    box-shadow: 0 0 35px rgba(0, 200, 255, 0.7);
-    transition: all 0.3s ease;
-}
-
-.logo-top img:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 65px rgba(0, 220, 255, 1);
-}
-
-
         .container {
             text-align: center;
             z-index: 2;
+        }
+
+        /* LOGO */
+        .logo-button {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px rgba(0, 170, 255, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .logo-button img {
+            height: 80px;
+            user-select: none;
+        }
+
+        .logo-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 45px rgba(0, 200, 255, 0.7);
         }
 
         h1 {
@@ -79,7 +70,7 @@
         .discord-btn {
             display: inline-block;
             margin-top: 35px;
-            padding: 18px 55px;
+            padding: 16px 45px;
             font-size: 1.1rem;
             font-weight: 600;
             letter-spacing: 1.5px;
@@ -87,7 +78,7 @@
             text-decoration: none;
             border-radius: 50px;
             background: linear-gradient(135deg, #5865F2, #00c6ff);
-            box-shadow: 0 0 30px rgba(88, 101, 242, 0.9);
+            box-shadow: 0 0 25px rgba(88, 101, 242, 0.8);
             animation: pulse 2s infinite;
             transition: transform 0.3s ease;
         }
@@ -97,9 +88,9 @@
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 25px rgba(88, 101, 242, 0.7); }
-            50% { box-shadow: 0 0 55px rgba(88, 101, 242, 1); }
-            100% { box-shadow: 0 0 25px rgba(88, 101, 242, 0.7); }
+            0% { box-shadow: 0 0 20px rgba(88, 101, 242, 0.7); }
+            50% { box-shadow: 0 0 45px rgba(88, 101, 242, 1); }
+            100% { box-shadow: 0 0 20px rgba(88, 101, 242, 0.7); }
         }
 
         .copyright {
@@ -128,20 +119,21 @@
 </head>
 <body>
 
-    <!-- BIG LOGO TOP LEFT -->
-    <a href="index.html" class="logo-top">
-        <img src="rodtech-logo.png" alt="RodTECH Logo">
-    </a>
-
     <div class="container">
+
+        <!-- LOGO -->
+        <a href="https://rodsullivanofficial.github.io/rodtech" class="logo-button">
+            <img src="rodtech-logo.png" alt="RodTECH Logo">
+        </a>
+
         <h1>Coming Soon</h1>
         <p>Something exciting is on the way ❄️</p>
 
-        <a href="https://rodsullivanofficial.github.io/rodtech/discord"
-           target="_blank"
-           class="discord-btn">
-           JOIN OUR DISCORD FOR SNEAK PEAKS
+        <!-- DISCORD BUTTON -->
+        <a href="https://rodsullivanofficial.github.io/rodtech/discord" target="_blank" class="discord-btn">
+            JOIN OUR DISCORD FOR SNEAK PEAKS
         </a>
+
     </div>
 
     <div class="copyright">
