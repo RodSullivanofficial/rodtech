@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RodTECH Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    overflow-x: hidden;
+}
+
+/* SNOW */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    color: white;
+    pointer-events: none;
+    animation: fall linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes fall {
+    to { transform: translateY(110vh); }
+}
+
+/* LOGO */
+.site-logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.site-logo img {
+    height: 80px;
+    width: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.site-logo img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* RODTECH BUTTON (CENTER) */
+.rodtech-btn {
+    display: block;
+    width: max-content;
+    margin: 30px auto;
+    padding: 18px 35px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    border: 2px solid rgba(255,255,255,0.7);
+    border-radius: 25px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 30px rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rodtech-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px rgba(255,255,255,0.8);
+}
+
+/* DISCORD BUTTON (BOTTOM) */
+.discord-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.6);
+    border-radius: 25px;
+    padding: 15px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 30px rgba(255,255,255,0.5);
+    transition: all 0.3s ease;
+    z-index: 900;
+}
+
+.discord-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px rgba(255,255,255,0.8);
+}
+
+/* BLOG CONTAINER */
+.blog-container {
+    max-width: 900px;
+    margin: 80px auto;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+/* IMAGE / NO IMAGE */
+.blog-image {
+    height: 320px;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    letter-spacing: 4px;
+    opacity: 1;
+}
+
+.blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* CONTENT */
+.blog-content {
+    padding: 30px;
+}
+
+/* AUTHOR */
+.blog-author {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pfp {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    text-align: center;
+    margin-right: 12px;
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
+.pfp img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.author-info {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.author-info strong {
+    color: white;
+    font-size: 15px;
+}
+
+/* TITLE */
+.blog-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+/* TEXT */
+.blog-text {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #eaeaea;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 13px;
+    opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGO -->
+<div class="site-logo">
+    <a href="index.html">
+        <img src="rodtech-logo.png" alt="RodTECH Logo" onerror="this.style.display='none'">
+    </a>
+</div>
+
+<!-- BLOG POST -->
+<div class="blog-container">
+
+    <!-- POST IMAGE -->
+    <div class="blog-image" id="postImageBox">
+        <span id="postImageText">NO IMAGE</span>
+        <img src="post3-image.jpg" alt=""
+             onload="document.getElementById('postImageText').style.display='none';"
+             onerror="this.style.display='none'">
+    </div>
+
+    <div class="blog-content">
+
+        <!-- AUTHOR -->
+        <div class="blog-author">
+            <div class="pfp" id="pfpBox">
+                <span id="pfpText">NO<br>IMAGE</span>
+                <img src="pfp.jpg" alt=""
+                     onload="document.getElementById('pfpText').style.display='none';"
+                     onerror="this.style.display='none'">
+            </div>
+
+            <div class="author-info">
+                <strong>RodTECH</strong><br>
+                02 Feb 2026 • 12:34
+            </div>
+        </div>
+
+        <!-- TITLE -->
+        <div class="blog-title">
+            INTRODUCTION.
+        </div>
+
+        <!-- TEXT -->
+        <div class="blog-text">
+          Welcome! Hello! This is an Introduction for the Blogs
+          <br><br>
+          This is My Blog/Forum for me!
+          <br><br>
+          There i will Type like in First Post <a href="post1.html">Here!</a>
+          <br><br>
+          I like it! It took me 5 hrs. to do This website
+          <br><br>
+          Thanks For Reading!
+        </div>
+
+
+    </div>
+</div>
+
+<!-- DISCORD BUTTON -->
+<a href="https://rodsullivanofficial.github.io/rodtech/discord" target="_blank" class="discord-btn">
+    JOIN OUR DISCORD FOR SNEAK PEAKS
+</a>
+
+<footer>
+    © 2026 RodTECH – All rights reserved 
+</footer>
+
+<!-- SNOW SCRIPT -->
+<script>
+for (let i = 0; i < 40; i++) {
+    const snow = document.createElement("div");
+    snow.className = "snowflake";
+    snow.innerHTML = "❄";
+    snow.style.left = Math.random() * 100 + "vw";
+    snow.style.animationDuration = 5 + Math.random() * 10 + "s";
+    snow.style.fontSize = 10 + Math.random() * 20 + "px";
+    document.body.appendChild(snow);
+}
+</script>
+
+</body>
+</html>

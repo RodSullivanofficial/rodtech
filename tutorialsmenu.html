@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tutorials | RodTECH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    overflow-x: hidden;
+}
+
+/* SNOW */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    color: white;
+    pointer-events: none;
+    animation: fall linear infinite;
+    z-index: 1;
+}
+@keyframes fall {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: linear-gradient(180deg, #00ffb0, #00c6ff);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+    transition: left 0.3s ease;
+    z-index: 10;
+    padding-top: 60px;
+}
+.sidebar.open { left: 0; }
+.sidebar a {
+    display: block;
+    padding: 15px 25px;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    text-decoration: none;
+    margin: 10px 0;
+    border-radius: 12px;
+    transition: background 0.3s ease;
+}
+.sidebar a:hover { background: rgba(255,255,255,0.2); }
+
+/* MENU BUTTON */
+.menu-btn {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 20;
+    background: rgba(0, 255, 176, 0.9);
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(0,255,176,0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.menu-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(0,255,176,1); }
+
+/* LOGO TOP RIGHT */
+.logo-top {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 15;
+}
+.logo-top img {
+    height: 80px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px);
+    border: 2px solid rgba(0,200,255,0.6);
+    box-shadow: 0 0 25px rgba(0,200,255,0.7);
+    transition: all 0.3s ease;
+}
+.logo-top img:hover { transform: scale(1.05); box-shadow: 0 0 45px rgba(0,220,255,1); }
+
+/* PAGE CONTENT */
+.content {
+    padding: 60px 40px 40px 40px;
+    max-width: 900px;
+    margin-left: 0;
+    text-align: center;
+    transition: margin-left 0.3s ease;
+}
+
+/* TOP BUTTONS */
+.button {
+    display: inline-block;
+    margin: 20px 15px;
+    padding: 18px 55px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-btn { 
+    background: linear-gradient(135deg, #00c6ff, #5865F2);
+    box-shadow: 0 0 30px rgba(0,200,255,0.8);
+    animation: pulse-blog 2s infinite;
+}
+.blog-btn:hover { transform: scale(1.12); }
+
+.tutorials-btn { 
+    background: linear-gradient(135deg, #00ffb0, #00c6ff);
+    box-shadow: 0 0 30px rgba(0,255,176,0.8);
+    animation: pulse-tutorials 2s infinite;
+}
+.tutorials-btn:hover { transform: scale(1.12); box-shadow:0 0 55px rgba(0,255,176,1); }
+
+@keyframes pulse-blog { 0% { box-shadow:0 0 25px rgba(0,200,255,0.7);} 50% { box-shadow:0 0 55px rgba(0,200,255,1);} 100% { box-shadow:0 0 25px rgba(0,200,255,0.7);} }
+@keyframes pulse-tutorials { 0% { box-shadow:0 0 25px rgba(0,255,176,0.7);} 50% { box-shadow:0 0 55px rgba(0,255,176,1);} 100% { box-shadow:0 0 25px rgba(0,255,176,0.7);} }
+
+/* POST STYLING */
+.post {
+    display: block;
+    background: rgba(0,0,0,0.55);
+    padding: 25px;
+    margin: 30px 0;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    color: white;
+    text-decoration: none;
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.post:hover { transform: scale(1.02); box-shadow: 0 0 50px rgba(0,255,176,0.7); }
+.post h2 { margin-bottom: 10px; }
+.post p { line-height: 1.6; color:#eaeaea; }
+
+/* COPYRIGHT */
+footer { text-align:center; margin-top:40px; font-size:13px; opacity:0.6; }
+
+</style>
+</head>
+<body>
+
+<!-- MENU BUTTON -->
+<button class="menu-btn" onclick="toggleMenu()">MENU</button>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <a href="index.html">Home</a>
+    <a href="blog-post.html">Blog</a>
+    <a href="tutorialsmenu.html">Tutorials</a>
+    <a href="WaitSite.html">Contact</a>
+</div>
+
+<!-- LOGO -->
+<a href="index.html" class="logo-top">
+    <img src="rodtech-logo.png" alt="RodTECH Logo">
+</a>
+
+<!-- PAGE CONTENT -->
+<div class="content" id="content">
+    <h1>Tutorials</h1>
+
+
+    <!-- KLIKALNE TUTORIALE -->
+    <a href="gettingstarted.html" class="post">
+        <h2>Tutorial 1: Getting Started with The Simple Site</h2>
+        <p>Welcome...</p>
+    </a>
+
+    <a href="hosting.html" class="post">
+        <h2>Tutorial 2: Hosting the Website</h2>
+        <p>What?</p>
+    </a>
+</div>
+
+<footer>
+    © 2026 RodTECH – All rights reserved
+</footer>
+
+<script>
+// SNOW
+const snowflakesCount = 60;
+for(let i=0;i<snowflakesCount;i++){
+    const s=document.createElement('div');
+    s.className='snowflake';
+    s.innerHTML='❄';
+    s.style.left=Math.random()*100+'vw';
+    s.style.fontSize=Math.random()*10+10+'px';
+    s.style.animationDuration=Math.random()*5+5+'s';
+    s.style.animationDelay=Math.random()*5+'s';
+    document.body.appendChild(s);
+}
+
+// MENU TOGGLE
+function toggleMenu(){
+    const sidebar=document.getElementById('sidebar');
+    const content=document.getElementById('content');
+    sidebar.classList.toggle('open');
+    content.classList.toggle('shift');
+}
+</script>
+
+</body>
+</html>
