@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodtech - RodCraft 3D Survival</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000; }
+        
+        /* Celownik na środku ekranu */
+        #crosshair {
+            position: absolute; top: 50%; left: 50%;
+            width: 20px; height: 20px; color: rgba(255, 255, 255, 0.8);
+            transform: translate(-50%, -50%); font-size: 24px; 
+            pointer-events: none; user-select: none;
+        }
+
+        /* UI Górne */
+        #ui-top {
+            position: absolute; top: 20px; left: 20px;
+            color: white; text-shadow: 2px 2px 4px #000;
+            pointer-events: none;
+        }
+
+        /* Pasek ekwipunku */
+        #inventory {
+            position: absolute; bottom: 20px; left: 50%;
+            transform: translateX(-50%); display: flex; gap: 10px;
+            background: rgba(0, 0, 0, 0.7); padding: 10px;
+            border-radius: 15px; border: 2px solid #444;
+        }
+
+        .slot {
+            width: 65px; height: 65px; border: 3px solid #555;
+            border-radius: 10px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: white; font-size: 11px; transition: 0.2s;
+        }
+
+        .slot b { font-size: 14px; margin-bottom: 2px; }
+
+        /* Aktywny slot w EQ */
+        .active {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+            transform: scale(1.1);
+        }
+
+        #death-screen {
+            display: none; position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(139, 0, 0, 0.8);
+            color: white; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-top">
+        <h1 style="margin: 0; color: #00ff88;">RodCraft 3D</h1>
+        <p>LPM: Niszcz | PPM: Buduj | 1-3: Materiały</p>
+        <p id="music-status" style="color: #aaa;">Kliknij, aby zacząć i włączyć muzykę</p>
+    </div>
+
+    <div id="crosshair">+</div>
+
+    <div id="inventory">
+        <div id="slot1" class="slot active"><b>1</b>TRAWA</div>
+        <div id="slot2" class="slot"><b>2</b>DREWNO</div>
+        <div id="slot3" class="slot"><b>3</b>KAMIEŃ</div>
+    </div>
+
+    <div id="death-screen">
+        <h1 style="font-size: 5rem;">ZGINĄŁEŚ!</h1>
+        <button onclick="location.reload()" style="padding: 15px 40px; font-size: 1.5rem; cursor: pointer; border-radius: 10px;">ODRODZENIE</button>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="assets/sounds/minecraft/background.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        let scene, camera, renderer, zombie;
+        let blocks = [];
+        let selectedBlock = 1;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let yaw = 0, pitch = 0;
+        let musicStarted = false;
+
+        // Materiały (Kolory/Tekstury)
+        const grassMat = new THREE.MeshPhongMaterial({ color: 0x44aa44 });
+        const woodMat = new THREE.MeshPhongMaterial({ color: 0x664422 });
+        const stoneMat = new THREE.MeshPhongMaterial({ color: 0x888888 });
+        const leafMat = new THREE.MeshPhongMaterial({ color: 0x228822 });
+        const zombieMat = new THREE.MeshPhongMaterial({ color: 0x2e7d32 });
+
+        function init() {
+            // 1. Scena i Mgła (Klimat jaskini/nocy)
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050510);
+            scene.fog = new THREE.Fog(0x050510, 1, 40);
+            
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // 2. Oświetlenie
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            scene.add(ambientLight);
+            const playerLight = new THREE.PointLight(0xffffff, 0.9, 15); // "Latarka" gracza
+            scene.add(playerLight);
+
+            // 3. Generowanie Świata (Teren + Jaskinie)
+            for(let x = -10; x < 20; x++) {
+                for(let z = -10; z < 20; z++) {
+                    createBlock(x, 0, z, grassMat); // Powierzchnia
+                    createBlock(x, -1, z, stoneMat); // Początek jaskini
+                    
+                    // Losowe głębokie jaskinie
+                    if(Math.random() > 0.4) {
+                        createBlock(x, -2, z, stoneMat);
+                    }
+                }
+            }
+
+            // 4. Drzewa
+            for(let i = 0; i < 5; i++) {
+                createTree(Math.floor(Math.random()*15), 1, Math.floor(Math.random()*15));
+            }
+
+            // 5. Zombie AI
+            zombie = new THREE.Group();
+            const zBody = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.8, 0.6), zombieMat);
+            zombie.add(zBody);
+            zombie.position.set(15, 1, 15);
+            scene.add(zombie);
+
+            // 6. Obsługa Sterowania i Audio
+            document.body.addEventListener('click', () => {
+                document.body.requestPointerLock();
+                if(!musicStarted) {
+                    const music = document.getElementById('bgMusic');
+                    music.play().then(() => {
+                        document.getElementById('music-status').innerText = "Music: Playing 🎵";
+                        musicStarted = true;
+                    }).catch(() => {
+                        document.getElementById('music-status').innerText = "Music error: Check folder path!";
+                    });
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (document.pointerLockElement === document.body) {
+                    yaw -= e.movementX * 0.002;
+                    pitch -= e.movementY * 0.002;
+                    pitch = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitch));
+                    camera.rotation.set(pitch, yaw, 0, 'YXZ');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if(e.code === 'KeyW') moveForward = true;
+                if(e.code === 'KeyS') moveBackward = true;
+                if(e.code === 'KeyA') moveLeft = true;
+                if(e.code === 'KeyD') moveRight = true;
+                if(e.key === '1') switchSlot(1);
+                if(e.key === '2') switchSlot(2);
+                if(e.key === '3') switchSlot(3);
+            });
+
+            document.addEventListener('keyup', (e) => {
+                if(e.code === 'KeyW') moveForward = false;
+                if(e.code === 'KeyS') moveBackward = false;
+                if(e.code === 'KeyA') moveLeft = false;
+                if(e.code === 'KeyD') moveRight = false;
+            });
+
+            // 7. Budowanie i Interakcja
+            document.addEventListener('mousedown', (e) => {
+                if (document.pointerLockElement !== document.body) return;
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
+                const intersects = raycaster.intersectObjects(blocks);
+
+                if (intersects.length > 0) {
+                    if (e.button === 0) { // LPM: Niszcz
+                        scene.remove(intersects[0].object);
+                        blocks = blocks.filter(b => b !== intersects[0].object);
+                    } else if (e.button === 2) { // PPM: Buduj
+                        const pos = intersects[0].object.position.clone().add(intersects[0].face.normal);
+                        let mat = selectedBlock === 1 ? grassMat : (selectedBlock === 2 ? woodMat : stoneMat);
+                        createBlock(pos.x, Math.round(pos.y), pos.z, mat);
+                    }
+                }
+            });
+
+            animate();
+        }
+
+        function createBlock(x, y, z, mat) {
+            const block = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
+            block.position.set(x, y, z);
+            scene.add(block);
+            blocks.push(block);
+        }
+
+        function createTree(x, y, z) {
+            for(let i=0; i<4; i++) createBlock(x, y+i, z, woodMat);
+            for(let ix=-1; ix<=1; ix++) {
+                for(let iz=-1; iz<=1; iz++) {
+                    createBlock(x+ix, y+4, z+iz, leafMat);
+                }
+            }
+        }
+
+        function switchSlot(num) {
+            selectedBlock = num;
+            document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+            document.getElementById('slot' + num).classList.add('active');
+        }
+
+        function animate() {
+            if(document.getElementById('death-screen').style.display === 'flex') return;
+            requestAnimationFrame(animate);
+            
+            // Chodzenie
+            const speed = 0.12;
+            if(moveForward) camera.translateZ(-speed);
+            if(moveBackward) camera.translateZ(speed);
+            if(moveLeft) camera.translateX(-speed);
+            if(moveRight) camera.translateX(speed);
+            camera.position.y = 1.6; // Wysokość oczu
+
+            // AI Zombie - goni gracza
+            if(zombie) {
+                const dx = camera.position.x - zombie.position.x;
+                const dz = camera.position.z - zombie.position.z;
+                const dist = Math.sqrt(dx*dx + dz*dz);
+                
+                if(dist < 15) { // Promień wykrywania
+                    zombie.position.x += (dx/dist) * 0.04;
+                    zombie.position.z += (dz/dist) * 0.04;
+                    zombie.lookAt(camera.position.x, 1, camera.position.z);
+                }
+
+                if(dist < 1.2) { // Kolizja
+                    document.getElementById('death-screen').style.display = 'flex';
+                    document.exitPointerLock();
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        init();
+        
+        // Responsywność okna
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

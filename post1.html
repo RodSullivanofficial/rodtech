@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            /* Gradient z Twojego index.html */
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* PASEK NAWIGACJI */
+        .nav {
+            width: 100%; max-width: 800px;
+            padding: 20px;
+            display: flex; justify-content: flex-start;
+        }
+
+        .btn-home {
+            background: white; color: #ff0055;
+            padding: 12px 25px; border-radius: 30px;
+            text-decoration: none; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .btn-home:hover { transform: scale(1.1); background: #fff4f7; }
+
+        /* KONTENER TREŚCI */
+        .content-box {
+            background: rgba(255, 255, 255, 0.9);
+            width: 90%; max-width: 800px;
+            margin-bottom: 50px;
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .content-box img { width: 100%; border-radius: 20px; margin-bottom: 20px; }
+        h1 { margin: 0 0 20px 0; color: #111; font-size: 2.5rem; }
+        p { line-height: 1.7; color: #444; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="nav">
+        <a href="index.html" class="btn-home">🏠 Go to Main Page</a>
+    </div>
+
+    <div class="content-box">
+        <img src="assets/img/Updates/post1.png" alt="Banner">
+        <h1>BIG RELEASE</h1>
+        <p>This is an Released Website</p>
+        <p>Source Code is On <github class="com"></github></p>
+    
+        
+        <h7>Update 1.0</h7>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Rodtech - Police Escape</title>
+    <style>
+        body {
+            background-color: #000;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        #game-container {
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 0, 85, 0.4);
+            border-radius: 10px;
+        }
+        canvas {
+            background-color: #222;
+            border-radius: 10px;
+            display: block;
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 2px 2px 4px #000;
+        }
+        #game-over {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border: 2px solid #ff0055;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .btn {
+            background-color: #ff0055;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .btn-home {
+            margin-top: 30px;
+            padding: 10px 25px;
+            border: 1px solid #333;
+            border-radius: 20px;
+            color: #888;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 style="color: #ff0055; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px;">Police Escape</h1>
+    <p style="color: #aaa; margin-bottom: 20px;">Użyj strzałek lub W,A,S,D do sterowania</p>
+
+    <div id="game-container">
+        <div id="ui">Score: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="500" height="700"></canvas>
+        
+        <div id="game-over">
+            <h2 style="color: #ff0055; font-size: 2.5rem; margin: 0 0 10px 0;">ZŁAPANY!</h2>
+            <p style="font-size: 1.2rem;">Twój wynik: <span id="final-score">0</span></p>
+            <button class="btn" onclick="location.reload()">Zagraj Ponownie</button>
+        </div>
+    </div>
+
+    <a href="gry.html" class="btn-home">← Wróć do Gier</a>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScoreElement = document.getElementById('final-score');
+
+        // USTAWIENIA GRY
+        let score = 0;
+        let isGameOver = false;
+        let roadOffset = 0;
+        let gameSpeed = 5; // Prędkość przesuwania się tła (drogi)
+
+        // GRACZ (Twoje auto)
+        const player = {
+            x: 225,
+            y: 550,
+            width: 40,
+            height: 70,
+            color: '#00d4ff', // Neonowy niebieski
+            speed: 6,
+            dx: 0,
+            dy: 0
+        };
+
+        // KLAWISZE
+        const keys = { ArrowLeft: false, ArrowRight: false, ArrowUp: false, ArrowDown: false, a: false, d: false, w: false, s: false };
+
+        window.addEventListener('keydown', (e) => { if (keys.hasOwnProperty(e.key)) keys[e.key] = true; });
+        window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.key)) keys[e.key] = false; });
+
+        // TABLICE NA OBIEKTY
+        const traffic = [];
+        const police = [];
+
+        // GENEROWANIE CYWILÓW
+        function spawnTraffic() {
+            if (Math.random() < 0.03) {
+                let laneX = Math.random() * (canvas.width - 60) + 10;
+                traffic.push({
+                    x: laneX,
+                    y: -100, // Zaczynają nad ekranem
+                    width: 40,
+                    height: 70,
+                    color: '#555', // Szare auta cywilne
+                    speed: Math.random() * 2 + 2 // Jadą wolniej niż ty
+                });
+            }
+        }
+
+        // GENEROWANIE POLICJI (AI)
+        function spawnPolice() {
+            // Im większy score, tym częściej pojawia się policja
+            let chance = 0.005 + (score * 0.00001);
+            if (Math.random() < chance) {
+                let startX = Math.random() < 0.5 ? 0 : canvas.width - 40;
+                let startY = canvas.height + 50; // Gonią od dołu
+                police.push({
+                    x: startX,
+                    y: startY,
+                    width: 40,
+                    height: 70,
+                    speed: 4.5 + (Math.random() * 1.5),
+                    flashDelay: 0
+                });
+            }
+        }
+
+        function checkCollision(rect1, rect2) {
+            return (
+                rect1.x < rect2.x + rect2.width &&
+                rect1.x + rect1.width > rect2.x &&
+                rect1.y < rect2.y + rect2.height &&
+                rect1.y + rect1.height > rect2.y
+            );
+        }
+
+        function update() {
+            if (isGameOver) return;
+
+            // 1. RUCH GRACZA
+            if (keys.ArrowLeft || keys.a) player.x -= player.speed;
+            if (keys.ArrowRight || keys.d) player.x += player.speed;
+            if (keys.ArrowUp || keys.w) player.y -= player.speed;
+            if (keys.ArrowDown || keys.s) player.y += player.speed;
+
+            // Blokada wyjazdu za ekran
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y < 0) player.y = 0;
+            if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
+
+            // 2. RUCH DROGI (Przesuwanie białych pasów)
+            roadOffset += gameSpeed;
+            if (roadOffset > 100) roadOffset = 0;
+
+            // 3. WYNIK
+            score += 0.1;
+            scoreElement.innerText = Math.floor(score);
+
+            spawnTraffic();
+            spawnPolice();
+
+            // 4. OBSŁUGA TRAFFIC (Cywile)
+            for (let i = traffic.length - 1; i >= 0; i--) {
+                let car = traffic[i];
+                // Cywile poruszają się w dół (względem gracza)
+                car.y += (gameSpeed - car.speed) + 2; 
+
+                if (checkCollision(player, car)) endGame();
+
+                if (car.y > canvas.height + 100) traffic.splice(i, 1);
+            }
+
+            // 5. OBSŁUGA POLICJI (AI Chasing)
+            for (let i = police.length - 1; i >= 0; i--) {
+                let cop = police[i];
+
+                // --- PROSTE AI (Obliczanie wektora w stronę gracza) ---
+                let dx = player.x - cop.x;
+                let dy = player.y - cop.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                
+                // Ruch w stronę gracza
+                cop.x += (dx / distance) * cop.speed;
+                cop.y += (dy / distance) * cop.speed;
+
+                // Dopasowanie do przesuwającej się drogi, żeby nie "wisieli" w miejscu
+                cop.y += (gameSpeed - 3);
+
+                if (checkCollision(player, cop)) endGame();
+
+                // Usuń policję, jeśli mocno z tyłu
+                if (cop.y > canvas.height + 200) police.splice(i, 1);
+            }
+        }
+
+        function draw() {
+            // Tło (Asfalt)
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Pasy na jezdni
+            ctx.fillStyle = '#fff';
+            for (let i = -100; i < canvas.height; i += 100) {
+                ctx.fillRect(canvas.width / 2 - 5, i + roadOffset, 10, 50);
+            }
+
+            // Gracz
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            // Szyba gracza
+            ctx.fillStyle = '#000';
+            ctx.fillRect(player.x + 5, player.y + 10, player.width - 10, 15);
+
+            // Traffic
+            for (let car of traffic) {
+                ctx.fillStyle = car.color;
+                ctx.fillRect(car.x, car.y, car.width, car.height);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(car.x + 5, car.y + 10, car.width - 10, 15); // szyba
+            }
+
+            // Policja
+            for (let cop of police) {
+                // Efekt migania syren (Zmienia kolor co kilka klatek)
+                cop.flashDelay++;
+                if (cop.flashDelay > 10) cop.flashDelay = 0;
+                
+                ctx.fillStyle = (cop.flashDelay > 5) ? '#ff0055' : '#0000ff';
+                ctx.fillRect(cop.x, cop.y, cop.width, cop.height);
+                
+                // Kogut na dachu
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(cop.x + 10, cop.y + 30, cop.width - 20, 10);
+            }
+        }
+
+        function endGame() {
+            isGameOver = true;
+            gameOverScreen.style.display = 'block';
+            finalScoreElement.innerText = Math.floor(score);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            if (!isGameOver) requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>

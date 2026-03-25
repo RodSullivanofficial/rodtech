@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodtech - Moje Gry</title>
+    <style>
+        /* Efekt unoszenia się karty po najechaniu myszką */
+        .game-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body style="background-color: #000000; margin: 0; padding: 50px 0; font-family: 'Segoe UI', Arial, sans-serif; color: white; display: flex; flex-direction: column; align-items: center;">
+
+    <img src="assets/img/logo/logo.png" alt="Logo" style="width: 100px; height: auto; margin-bottom: 30px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));">
+
+    <h1 style="font-size: 3rem; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 50px; color: #ffffff; border-bottom: 3px solid #ff0055; padding-bottom: 10px;">
+        Gry Rodtech
+    </h1>
+
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; padding: 20px; width: 100%; max-width: 1000px;">
+
+        <div class="game-card" style="width: 320px; background-color: #111; border-radius: 30px; border: 2px solid #333; overflow: hidden; display: flex; flex-direction: column;">
+            
+            <div style="width: 100%; height: 180px; background-color: #222; position: relative;">
+                <img src="assets/img/games/dino3d.jpg" alt="Dino 3D" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; top: 15px; right: 15px; background-color: #00ff88; color: black; padding: 5px 15px; border-radius: 15px; font-weight: bold; font-size: 0.8rem;">ZABAWNE</span>
+            </div>
+            
+            <div style="padding: 20px; text-align: center; background-color: #1a1a1a;">
+                <h2 style="margin: 0 0 10px 0; color: #00ff88; font-size: 1.5rem; text-transform: uppercase;">RodTECH Dino</h2>
+                <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 25px;">Newest Dino game ⭐⭐🎮🎮😁😁</p>
+                
+                <a href="dino.html" style="display: inline-block; background-color: #00ff88; color: black; text-decoration: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Zagraj Teraz</a>
+            </div>
+        </div>
+
+        <div class="game-card" style="width: 320px; background-color: #111; border-radius: 30px; border: 2px solid #333; overflow: hidden; display: flex; flex-direction: column;">
+            
+            <div style="width: 100%; height: 180px; background-color: #222; position: relative;">
+                <img src="assets/img/games/police.jpg" alt="Police Escape" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; top: 15px; right: 15px; background-color: #ff0055; color: white; padding: 5px 15px; border-radius: 15px; font-weight: bold; font-size: 0.8rem;">AKCJA</span>
+            </div>
+            
+            <div style="padding: 20px; text-align: center; background-color: #1a1a1a;">
+                <h2 style="margin: 0 0 10px 0; color: #ff0055; font-size: 1.5rem; text-transform: uppercase;">Police 3D Run</h2>
+                <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 25px;">Run from the Police!</p>
+                
+                <a href="police.html" style="display: inline-block; background-color: #ff0055; color: white; text-decoration: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Zagraj Teraz</a>
+            </div>
+        </div>
+            
+            <div style="width: 100%; height: 180px; background-color: #222; position: relative;">
+                <img src="assets/img/games/police.jpg" alt="Police Escape" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; top: 15px; right: 15px; background-color: #ff0055; color: white; padding: 5px 15px; border-radius: 15px; font-weight: bold; font-size: 0.8rem;">AKCJA</span>
+            </div>
+            
+            <div style="padding: 20px; text-align: center; background-color: #1a1a1a;">
+                <h2 style="margin: 0 0 10px 0; color: #ff0055; font-size: 1.5rem; text-transform: uppercase;">RodCraft</h2>
+                <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 25px;">RodCraft Newest game!</p>
+                
+                <a href="minecraft.html" style="display: inline-block; background-color: #ff0055; color: white; text-decoration: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Zagraj Teraz</a>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="index.html" style="margin-top: 60px; color: #666; text-decoration: none; border: 1px solid #333; padding: 10px 30px; border-radius: 20px; font-size: 0.9rem; transition: 0.3s;">← Wróć do Home</a>
+
+</body>
+</html>

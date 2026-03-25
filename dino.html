@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rodtech - Dino Game</title>
+    <style>
+        body {
+            background-color: #000;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        #gameCanvas {
+            border-bottom: 2px solid #555;
+            background-color: #111;
+            border-radius: 20px;
+        }
+        .info {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn-home {
+            margin-top: 30px;
+            padding: 10px 25px;
+            border: 1px solid #333;
+            border-radius: 20px;
+            color: #888;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-home:hover { background: #222; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1 style="letter-spacing: 5px; color: #00ff88;">DINO RUN</h1>
+    <div id="score" style="font-size: 1.5rem; margin-bottom: 10px;">Score: 0</div>
+
+    <canvas id="gameCanvas" width="800" height="200"></canvas>
+
+    <div class="info">
+        <p>Press <b>SPACE</b> or <b>CLICK</b> to Jump</p>
+        <p>GRAJ <b>W TO</b> GÓW<b>NIARZU</b></p>
+    </div>
+
+    <a href="index.html" class="btn-home">← Back to Home</a>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+
+        // USTAWIENIA GRY
+        let score = 0;
+        let gameSpeed = 5;
+        let isGameOver = false;
+
+        // DINOZAUR
+        const dino = {
+            x: 50,
+            y: 150,
+            width: 40,
+            height: 40,
+            color: '#00ff88',
+            dy: 0,
+            jumpForce: 12,
+            gravity: 0.6,
+            grounded: false
+        };
+
+        // PRZESZKODY (Kaktusy)
+        const obstacles = [];
+
+        function spawnObstacle() {
+            let size = Math.random() * (50 - 20) + 20;
+            obstacles.push({
+                x: canvas.width,
+                y: canvas.height - size,
+                width: 20,
+                height: size,
+                color: '#ff0055'
+            });
+        }
+
+        // STEROWANIE
+        function jump() {
+            if (dino.grounded && !isGameOver) {
+                dino.dy = -dino.jumpForce;
+                dino.grounded = false;
+            }
+            if (isGameOver) {
+                location.reload(); // Restart gry po kliknięciu
+            }
+        }
+
+        window.addEventListener('keydown', (e) => { if (e.code === 'Space') jump(); });
+        canvas.addEventListener('mousedown', jump);
+
+        function update() {
+            if (isGameOver) return;
+
+            // Fizyka dinozaura
+            dino.dy += dino.gravity;
+            dino.y += dino.dy;
+
+            if (dino.y + dino.height > canvas.height) {
+                dino.y = canvas.height - dino.height;
+                dino.dy = 0;
+                dino.grounded = true;
+            }
+
+            // Ruch przeszkód
+            if (Math.random() < 0.015) spawnObstacle();
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].x -= gameSpeed;
+
+                // Kolizja
+                if (dino.x < obstacles[i].x + obstacles[i].width &&
+                    dino.x + dino.width > obstacles[i].x &&
+                    dino.y < obstacles[i].y + obstacles[i].height &&
+                    dino.y + dino.height > obstacles[i].y) {
+                    isGameOver = true;
+                    alert("GAME OVER! Score: " + Math.floor(score));
+                    location.reload();
+                }
+
+                if (obstacles[i].x + obstacles[i].width < 0) {
+                    obstacles.splice(i, 1);
+                    score += 10;
+                    gameSpeed += 0.1; // Gra przyspiesza
+                }
+            }
+
+            scoreElement.innerText = "Score: " + Math.floor(score);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Rysuj Dino
+            ctx.fillStyle = dino.color;
+            ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+            // Rysuj Przeszkody
+            ctx.fillStyle = '#ff0055';
+            for (let obs of obstacles) {
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            }
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>

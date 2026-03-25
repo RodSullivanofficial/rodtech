@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Rodtech - Full Control Pursuit</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+        #ui {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            color: #00ff88; font-size: 2.5rem; font-weight: bold; pointer-events: none;
+            text-shadow: 0 0 15px #000; z-index: 10;
+        }
+        #speedometer {
+            position: absolute; bottom: 30px; right: 30px; 
+            color: #00d4ff; font-size: 3rem; font-weight: bold;
+            text-align: right; text-shadow: 0 0 10px #00d4ff;
+        }
+        #game-over-screen {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); color: #ff0055; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 100;
+        }
+        .btn {
+            background: #ff0055; color: white; border: none; padding: 15px 50px;
+            border-radius: 30px; font-size: 1.5rem; cursor: pointer; margin-top: 20px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">SCORE: <span id="scoreVal">0</span></div>
+    <div id="speedometer"><span id="kmh">0</span> <small style="font-size: 1rem;">KM/H</small></div>
+
+    <div id="game-over-screen">
+        <h1 style="font-size: 6rem; margin: 0;">BUSTED!</h1>
+        <p style="color: white; font-size: 1.5rem;">Zatrzymany przez policję.</p>
+        <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        let scene, camera, renderer, player, police, road;
+        let roadLines = [];
+        let score = 0, isGameOver = false, keys = {};
+        
+        // FIZYKA JAZDY
+        let currentSpeed = 0; 
+        const maxSpeed = 200;
+        const maxReverse = -40;
+        const acceleration = 0.8; 
+        const friction = 0.2; 
+        const braking = 1.2;
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x000000, 10, 80);
+            
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 4, 8);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const sun = new THREE.DirectionalLight(0xffffff, 1);
+            sun.position.set(5, 10, 5);
+            scene.add(sun);
+
+            // Droga
+            const roadGeo = new THREE.PlaneGeometry(20, 2000);
+            const roadMat = new THREE.MeshPhongMaterial({ color: 0x151515 });
+            road = new THREE.Mesh(roadGeo, roadMat);
+            road.rotation.x = -Math.PI / 2;
+            scene.add(road);
+
+            // Pasy na drodze
+            const lineGeo = new THREE.PlaneGeometry(0.4, 4);
+            const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            for(let i=0; i<50; i++) {
+                let line = new THREE.Mesh(lineGeo, lineMat);
+                line.position.set(0, 0.02, -i * 30);
+                line.rotation.x = -Math.PI / 2;
+                scene.add(line);
+                roadLines.push(line);
+            }
+
+            // GRACZ
+            player = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 2.4), new THREE.MeshPhongMaterial({ color: 0x00d4ff }));
+            player.add(body);
+            
+            // Światła STOP
+            const stopGeo = new THREE.BoxGeometry(0.3, 0.1, 0.1);
+            player.stopLightL = new THREE.Mesh(stopGeo, new THREE.MeshBasicMaterial({ color: 0x550000 }));
+            player.stopLightR = new THREE.Mesh(stopGeo, new THREE.MeshBasicMaterial({ color: 0x550000 }));
+            player.stopLightL.position.set(-0.4, 0.1, 1.2);
+            player.stopLightR.position.set(0.4, 0.1, 1.2);
+            player.add(player.stopLightL, player.stopLightR);
+            
+            player.position.y = 0.3;
+            scene.add(player);
+
+            // POLICJA
+            police = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.7, 2.5), new THREE.MeshPhongMaterial({ color: 0x111111 }));
+            police.position.set(0, 0.35, 15); 
+            scene.add(police);
+
+            const siren = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.3), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+            siren.position.y = 0.5;
+            police.add(siren);
+            police.siren = siren;
+
+            window.addEventListener('keydown', e => keys[e.code] = true);
+            window.addEventListener('keyup', e => keys[e.code] = false);
+
+            animate();
+        }
+
+        function animate() {
+            if (isGameOver) return;
+            requestAnimationFrame(animate);
+
+            // LOGIKA PRĘDKOŚCI I COFANIA
+            let isBraking = false;
+
+            if (keys['ArrowUp'] || keys['KeyW']) {
+                currentSpeed += acceleration;
+            } else if (keys['ArrowDown'] || keys['KeyS']) {
+                if (currentSpeed > 0) {
+                    currentSpeed -= braking; // Hamowanie
+                    isBraking = true;
+                } else {
+                    currentSpeed -= acceleration / 2; // Cofanie
+                }
+            } else {
+                // Tarcie (powolne zwalnianie do zera)
+                if (currentSpeed > 0.5) currentSpeed -= friction;
+                else if (currentSpeed < -0.5) currentSpeed += friction;
+                else currentSpeed = 0;
+            }
+
+            // Ograniczenia
+            if (currentSpeed > maxSpeed) currentSpeed = maxSpeed;
+            if (currentSpeed < maxReverse) currentSpeed = maxReverse;
+
+            // Efekt świateł STOP
+            const stopColor = isBraking || currentSpeed < 0 ? 0xff0000 : 0x550000;
+            player.stopLightL.material.color.setHex(stopColor);
+            player.stopLightR.material.color.setHex(stopColor);
+
+            document.getElementById('kmh').innerText = Math.floor(currentSpeed);
+
+            // Skręcanie
+            if ((keys['ArrowLeft'] || keys['KeyA']) && player.position.x > -8) player.position.x -= 0.15;
+            if ((keys['ArrowRight'] || keys['KeyD']) && player.position.x < 8) player.position.x += 0.15;
+
+            // Ruch drogi
+            let moveStep = currentSpeed / 60; 
+            roadLines.forEach(line => {
+                line.position.z += moveStep;
+                if (line.position.z > 20) line.position.z = -130;
+                if (line.position.z < -130) line.position.z = 20;
+            });
+
+            // AI POLICJI - Bardziej zawzięte
+            let targetDist = (currentSpeed > 10) ? 2 : 4;
+            if (police.position.z > targetDist) police.position.z -= 0.08;
+            if (police.position.z < targetDist - 1) police.position.z += 0.05;
+            police.position.x += (player.position.x - police.position.x) * 0.1;
+
+            police.siren.material.color.setHex(Math.floor(Date.now() / 150) % 2 === 0 ? 0xff0000 : 0x0000ff);
+
+            // Kamera
+            camera.position.z = 8 + (Math.abs(currentSpeed) / 60);
+            camera.fov = 75 + (Math.abs(currentSpeed) / 15);
+            camera.updateProjectionMatrix();
+
+            // Kolizja
+            if (Math.abs(player.position.z - police.position.z) < 2.2 && 
+                Math.abs(player.position.x - police.position.x) < 1.1) {
+                endGame();
+            }
+
+            score += Math.abs(Math.floor(currentSpeed / 100));
+            document.getElementById('scoreVal').innerText = score;
+            renderer.render(scene, camera);
+        }
+
+        function endGame() {
+            isGameOver = true;
+            document.getElementById('game-over-screen').style.display = 'flex';
+        }
+
+        init();
+    </script>
+</body>
+</html>
