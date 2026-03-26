@@ -3,134 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RodTECH - Home</title>
+    <title>RodTECH - Bass Boost Confetti</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
+            flex-direction: column; font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
-            background-size: 400% 400%;
-            animation: gradientMove 10s ease infinite;
-            overflow: hidden;
-            text-align: center;
+            background-size: 400% 400%; animation: gradientMove 10s ease infinite;
+            overflow: hidden; text-align: center;
         }
 
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* --- BOX PO LEWEJ STRONIE --- */
         #expanding-box {
             position: absolute; left: 40px; top: 50%; transform: translateY(-50%);
-            width: 200px; min-height: 120px; background: rgba(255, 255, 255, 0.3);
+            width: 240px; height: 350px; background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(15px); border: 2px solid white; border-radius: 25px;
-            padding: 20px; color: #333; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer; z-index: 10; text-align: left;
+            padding: 15px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10;
         }
+        #expanding-box:hover { width: 420px; height: 500px; background: rgba(255, 255, 255, 0.8); }
 
-        #expanding-box:hover { width: 380px; background: rgba(255, 255, 255, 0.9); }
-        #expanding-box h3 { margin: 0; color: #ff0055; font-size: 1.4rem; }
-        #expanding-box p { font-size: 1rem; margin-top: 12px; line-height: 1.5; color: #444; }
+        .logo-img { width: 150px; transition: 0.1s; } /* Szybszy transition dla efektu basu */
+        .main-title { font-size: 3.5rem; color: #333; margin: 10px 0; }
 
-        /* --- LOGO I NAGŁÓWEK --- */
-        .logo-img { width: 150px; height: auto; margin-bottom: 10px; }
-        .main-title { margin: 0; font-size: 3.5rem; color: #333; letter-spacing: 2px; }
-        .welcome-text { margin: 5px 0 30px 0; font-size: 1.5rem; color: #555; font-weight: 300; }
-
-        /* --- MENU --- */
-        .nav-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        .btn { display: inline-block; padding: 15px 30px; background: white; color: black; text-decoration: none; font-weight: bold; border-radius: 35px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; }
-        .btn:hover { transform: translateY(-5px); background: #fff4f7; }
-
-        /* --- PLAYER --- */
         #music-panel {
             position: absolute; bottom: 30px; left: 30px;
             background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px);
             padding: 12px 25px; border-radius: 50px; border: 1px solid white;
-            display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex; align-items: center; gap: 15px;
         }
-
-        .player-ctrl { background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .player-ctrl:hover { background: #ff9a9e; color: white; transform: scale(1.1); }
-        #song-info { font-size: 14px; font-weight: bold; color: #333; min-width: 220px; text-align: left; }
+        .player-ctrl { background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="expanding-box">
-        <h3>News & Info</h3>
-        <p>Rise and Shine! Welcome to Newest Look of The Website!</p>
+        <h3 style="margin: 0; color: #ff0055; text-align: left;">DevLog</h3>
+        <iframe src="updates.html" style="width:100%; height:90%; border:none; margin-top:10px;"></iframe>
     </div>
 
-    <img src="assets/img/logo/logo.png" alt="Logo" class="logo-img">
+    <img src="./assets/img/logo/logo.png" alt="Logo" class="logo-img" id="main-logo">
     <h1 class="main-title">RodTECH</h1>
-    <p class="welcome-text">Welcome.</p>
-
-    <div class="nav-container">
-        <a href="my-setup.html" class="btn">My Setup</a>
-        <a href="about.html" class="btn">About Me</a>
-        <a href="socials.html" class="btn">Socials</a>
-        <a href="friends.html" class="btn">My Friends</a>
-        <a href="games.html" class="btn">Games</a>
-        <a href="updates.html" class="btn">Updates</a>
-    </div>
 
     <div id="music-panel">
         <button class="player-ctrl" onclick="changeTrack(-1)">❮</button>
         <button class="player-ctrl" id="playBtn" onclick="togglePlay()">▶</button>
         <button class="player-ctrl" onclick="changeTrack(1)">❯</button>
-        <div id="song-info">🎵 <span id="track-name">Click to Start!</span></div>
+        <div id="song-info" style="font-size: 14px; font-weight: bold; min-width: 200px; text-align: left;">
+            🎵 <span id="track-name">Kliknij Start</span>
+        </div>
     </div>
 
-    <audio id="bg-audio"></audio>
+    <audio id="bg-audio" crossorigin="anonymous"></audio>
 
     <script>
         const audio = document.getElementById('bg-audio');
-        const playBtn = document.getElementById('playBtn');
+        const logo = document.getElementById('main-logo');
         const trackLabel = document.getElementById('track-name');
-
+        
         const playlist = [
             { title: "Eurodab", file: "assets/sounds/main/song1.mp3" },
-            { title: "Linkin Park - In The End.", file: "assets/sounds/main/song2.mp3" }
+            { title: "Linkin Park - In The End", file: "assets/sounds/main/song2.mp3" }
         ];
 
         let currentTrack = 0;
         let isPlaying = false;
+        let audioCtx, analyser, dataArray, source;
 
-        // FUNKCJA KONFETTI - DUŻO WIĘCEJ CZĄSTECZEK
-        function shootConfetti() {
-            const end = Date.now() + (100); // krótki, intensywny strzał
+        // Inicjalizacja analizatora dźwięku
+        function initAudioContext() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
 
-            // Strzał z lewej
-            confetti({
-                particleCount: 250,
-                angle: 60,
-                spread: 70,
-                origin: { x: 0, y: 0.8 },
-                colors: ['#ff9a9e', '#fad0c4', '#fbc2eb', '#a6c1ee', '#ffffff']
-            });
-            // Strzał z prawej
-            confetti({
-                particleCount: 250,
-                angle: 120,
-                spread: 70,
-                origin: { x: 1, y: 0.8 },
-                colors: ['#ff9a9e', '#fad0c4', '#fbc2eb', '#a6c1ee', '#ffffff']
-            });
+            analyser.fftSize = 64; // Mała próbka dla szybkości (bas jest na początku)
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            
+            draw();
         }
 
-        // AUTOMATYCZNE KONFETTI CO 3 SEKUNDY
-        setInterval(() => {
-            if (isPlaying) shootConfetti();
-        }, 1000);
+        function draw() {
+            requestAnimationFrame(draw);
+            if (!isPlaying) return;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            // Bas to pierwsze kilka przedziałów (0-4)
+            let bassValue = 0;
+            for(let i = 0; i < 4; i++) { bassValue += dataArray[i]; }
+            bassValue = bassValue / 4;
+
+            // Efekt wizualny na Logo (pulsuje w rytm basu)
+            let scale = 1 + (bassValue / 500);
+            logo.style.transform = `scale(${scale})`;
+
+            // Strzał konfetti przy mocnym uderzeniu basu
+            // Próg (210) możesz dostosować pod głośność piosenki
+            if (bassValue > 210) {
+                confetti({
+                    particleCount: 5, // Mało cząsteczek, bo bas uderza często
+                    startVelocity: 30,
+                    spread: 360,
+                    origin: { x: Math.random(), y: Math.random() - 0.2 },
+                    colors: ['#ff9a9e', '#fad0c4', '#fbc2eb']
+                });
+            }
+        }
 
         function loadTrack(index) {
             audio.src = playlist[index].file;
@@ -139,47 +122,48 @@
         }
 
         function togglePlay() {
+            initAudioContext();
             if (!audio.src) loadTrack(currentTrack);
-            
             if (audio.paused) {
-                audio.play().then(() => {
-                    playBtn.innerText = "II";
-                    isPlaying = true;
-                    shootConfetti();
-                });
+                audio.play();
+                isPlaying = true;
+                document.getElementById('playBtn').innerText = "II";
             } else {
                 audio.pause();
-                playBtn.innerText = "▶";
                 isPlaying = false;
+                document.getElementById('playBtn').innerText = "▶";
             }
         }
 
-        function changeTrack(direction) {
-            currentTrack = (currentTrack + direction + playlist.length) % playlist.length;
+        function changeTrack(dir) {
+            currentTrack = (currentTrack + dir + playlist.length) % playlist.length;
             loadTrack(currentTrack);
-            audio.play().then(() => {
-                playBtn.innerText = "II";
-                isPlaying = true;
-                shootConfetti();
-            });
+            audio.play();
+            isPlaying = true;
+            document.getElementById('playBtn').innerText = "II";
         }
 
-        // Automatyczna zmiana na kolejną piosenkę
-        audio.onended = () => {
-            changeTrack(1);
-        };
+        // Auto-next
+        audio.onended = () => changeTrack(1);
 
-        // Auto-start po pierwszym kliknięciu
+        // Start po kliknięciu
         window.addEventListener('click', () => {
             if (!isPlaying) {
+                initAudioContext();
                 loadTrack(currentTrack);
-                audio.play().then(() => {
-                    playBtn.innerText = "II";
-                    isPlaying = true;
-                    shootConfetti();
-                });
+                audio.play();
+                isPlaying = true;
+                document.getElementById('playBtn').innerText = "II";
             }
         }, { once: true });
+
+        // Standardowy strzał co 3 sekundy (niezależnie od basu)
+        setInterval(() => {
+            if (isPlaying) {
+                confetti({ particleCount: 150, spread: 70, origin: { x: 0, y: 0.8 } });
+                confetti({ particleCount: 150, spread: 70, origin: { x: 1, y: 0.8 } });
+            }
+        }, 3000);
     </script>
 </body>
 </html>
