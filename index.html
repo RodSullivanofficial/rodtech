@@ -16,6 +16,7 @@
 
         @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
+        /* --- LEWY BOX (UPDATES) --- */
         #expanding-box {
             position: absolute; left: 40px; top: 50%; transform: translateY(-50%);
             width: 240px; height: 350px; background: rgba(255, 255, 255, 0.3);
@@ -24,16 +25,47 @@
         }
         #expanding-box:hover { width: 420px; height: 500px; background: rgba(255, 255, 255, 0.8); }
 
-        .logo-img { width: 150px; transition: 0.1s; } /* Szybszy transition dla efektu basu */
-        .main-title { font-size: 3.5rem; color: #333; margin: 10px 0; }
+        /* --- LOGO I TYTUŁ --- */
+        .logo-img { width: 150px; transition: 0.1s; margin-bottom: 10px; }
+        .main-title { font-size: 3.5rem; color: #333; margin: 0; font-weight: bold; }
+        .welcome-text { color: #555; margin-bottom: 20px; font-size: 1.2rem; }
 
+        /* --- MENU (Z OBRAZKA) --- */
+        .nav-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: white;
+            color: black;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 50px; /* Zaokrąglone końce jak na screenie */
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: 0.3s ease;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            background: #fdfdfd;
+        }
+
+        /* --- PANEL MUZYCZNY --- */
         #music-panel {
             position: absolute; bottom: 30px; left: 30px;
             background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px);
             padding: 12px 25px; border-radius: 50px; border: 1px solid white;
             display: flex; align-items: center; gap: 15px;
         }
-        .player-ctrl { background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+        .player-ctrl { background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -45,6 +77,16 @@
 
     <img src="./assets/img/logo/logo.png" id="main-logo" class="logo-img" alt="Logo">
     <h1 class="main-title">RodTECH</h1>
+    <p class="welcome-text">welcome.</p>
+
+    <div class="nav-container">
+        <a href="setup.html" class="btn">My Setup</a>
+        <a href="about.html" class="btn">About Me</a>
+        <a href="socials.html" class="btn">Socials</a>
+        <a href="friends.html" class="btn">My Friends</a>
+        <a href="games.html" class="btn">Games</a>
+        <a href="updates.html" class="btn">Updates</a>
+    </div>
 
     <div id="music-panel">
         <button class="player-ctrl" onclick="changeTrack(-1)">❮</button>
@@ -71,7 +113,6 @@
         let isPlaying = false;
         let audioCtx, analyser, dataArray, source;
 
-        // Inicjalizacja analizatora dźwięku
         function initAudioContext() {
             if (audioCtx) return;
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -79,34 +120,24 @@
             source = audioCtx.createMediaElementSource(audio);
             source.connect(analyser);
             analyser.connect(audioCtx.destination);
-
-            analyser.fftSize = 64; // Mała próbka dla szybkości (bas jest na początku)
+            analyser.fftSize = 64;
             const bufferLength = analyser.frequencyBinCount;
             dataArray = new Uint8Array(bufferLength);
-            
             draw();
         }
 
         function draw() {
             requestAnimationFrame(draw);
             if (!isPlaying) return;
-
             analyser.getByteFrequencyData(dataArray);
-
-            // Bas to pierwsze kilka przedziałów (0-4)
             let bassValue = 0;
             for(let i = 0; i < 4; i++) { bassValue += dataArray[i]; }
             bassValue = bassValue / 4;
-
-            // Efekt wizualny na Logo (pulsuje w rytm basu)
             let scale = 1 + (bassValue / 500);
             logo.style.transform = `scale(${scale})`;
-
-            // Strzał konfetti przy mocnym uderzeniu basu
-            // Próg (210) możesz dostosować pod głośność piosenki
             if (bassValue > 210) {
                 confetti({
-                    particleCount: 5, // Mało cząsteczek, bo bas uderza często
+                    particleCount: 5,
                     startVelocity: 30,
                     spread: 360,
                     origin: { x: Math.random(), y: Math.random() - 0.2 },
@@ -143,10 +174,8 @@
             document.getElementById('playBtn').innerText = "II";
         }
 
-        // Auto-next
         audio.onended = () => changeTrack(1);
 
-        // Start po kliknięciu
         window.addEventListener('click', () => {
             if (!isPlaying) {
                 initAudioContext();
@@ -157,7 +186,6 @@
             }
         }, { once: true });
 
-        // Standardowy strzał co 3 sekundy (niezależnie od basu)
         setInterval(() => {
             if (isPlaying) {
                 confetti({ particleCount: 150, spread: 70, origin: { x: 0, y: 0.8 } });
