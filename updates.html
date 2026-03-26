@@ -2,53 +2,148 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktualizacje Systemu</title>
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
         body {
-            margin: 0; padding: 15px;
-            font-family: 'Segoe UI', sans-serif;
-            background: transparent; color: #333;
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
         }
 
-        .post-card {
-            background: rgba(255, 255, 255, 0.4);
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            background: var(--accent-gradient);
+            background-clip: text; /* standard property */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .update-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* Gradientowy pasek z boku */
+        .update-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            background: var(--accent-gradient);
+        }
+
+        .update-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .update-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .version-tag {
+            background: var(--accent-gradient);
+            padding: 4px 12px;
             border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            border: 1px solid white;
-            text-decoration: none; /* Usuwa podkreślenie linku */
-            display: block;
+            font-weight: bold;
+            font-size: 0.85rem;
         }
 
-        .post-card:hover {
-            background: rgba(255, 255, 255, 0.8);
-            transform: translateY(-3px);
+        .update-date {
+            color: var(--text-dim);
+            font-size: 0.9rem;
         }
 
-        .post-card img {
-            width: 100%; height: 100px;
-            object-fit: cover; border-radius: 12px;
-            margin-bottom: 10px;
+        h3 {
+            margin: 10px 0;
+            font-size: 1.4rem;
         }
 
-        .card-title { font-weight: bold; color: #111; margin-bottom: 5px; }
-        .card-desc { font-size: 0.85rem; color: #555; }
+        .change-log {
+            list-style: none;
+            padding: 0;
+            color: var(--text-dim);
+        }
+
+        .change-log li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .change-log li::before {
+            content: "✦";
+            color: #a855f7;
+            margin-right: 10px;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
 
-    <a href="post1.html" class="post-card">
-        <img src="assets/img/blog/pic1.jpg" alt="Update">
-        <div class="card-title">Wielka Aktualizacja Konfetti 🎊</div>
-        <div class="card-desc">Dowiedz się więcej o nowym systemie cząsteczek...</div>
-    </a>
+<div class="container">
+    <h1>Dziennik Zmian</h1>
 
-    <a href="post2.html" class="post-card">
-        <img src="assets/img/blog/pic2.jpg" alt="Music">
-        <div class="card-title">Nowy utwór: Eurodab 🎵</div>
-        <div class="card-desc">Sprawdź dlaczego ten kawałek rządzi na stronie.</div>
-    </a>
+    <div class="update-card">
+        <div class="update-header">
+            <span class="version-tag">v2.4.0</span>
+            <span class="update-date">26 marca 2026</span>
+        </div>
+        <h3>Ultra Gradient Update</h3>
+        <p>Wprowadziliśmy całkowicie nowy interfejs użytkownika oparty na płynnych przejściach kolorów.</p>
+        <ul class="change-log">
+            <li>Dodano gradienty do nagłówków i tagów..</li>
+            
+        </ul> 
+    </div>
+ <div class="nav-container">
+        <a href="post1.html" class="btn">Look more!</a>
+    </div>
+
+    <div class="update-card">
+        <div class="update-header">
+            <span class="version-tag">v2.3.5</span>
+            <span class="update-date">15 marca 2026</span>
+        </div>
+        <h3>Poprawki stabilności</h3>
+        <ul class="change-log">
+            <li>Usunięto błąd znikających powiadomień</li>
+            <li>Zaktualizowano biblioteki ikon</li>
+        </ul>
+    </div>
+</div>
 
 </body>
 </html>

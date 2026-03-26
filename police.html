@@ -2,198 +2,726 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Rodtech - Full Control Pursuit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Police Chase 3D - Ucieczka przed policją</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
         #ui {
-            position: absolute; top: 20px; width: 100%; text-align: center;
-            color: #00ff88; font-size: 2.5rem; font-weight: bold; pointer-events: none;
-            text-shadow: 0 0 15px #000; z-index: 10;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-shadow: 2px 2px 0 black;
+            z-index: 100;
+            font-family: monospace;
+            font-size: 18px;
+            pointer-events: none;
+            background: rgba(0,0,0,0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #ff4444;
         }
-        #speedometer {
-            position: absolute; bottom: 30px; right: 30px; 
-            color: #00d4ff; font-size: 3rem; font-weight: bold;
-            text-align: right; text-shadow: 0 0 10px #00d4ff;
+        
+        #speed {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffaa44;
         }
-        #game-over-screen {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); color: #ff0055; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 100;
+        
+        #health {
+            color: #ff5555;
+            font-size: 24px;
         }
-        .btn {
-            background: #ff0055; color: white; border: none; padding: 15px 50px;
-            border-radius: 30px; font-size: 1.5rem; cursor: pointer; margin-top: 20px; font-weight: bold;
+        
+        #score {
+            color: #44ff44;
+        }
+        
+        #minimap {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 180px;
+            height: 180px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 12px;
+            border: 2px solid #ffaa44;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        #minimap canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 200;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff4444;
+            font-family: monospace;
+        }
+        
+        #game-over h1 {
+            font-size: 48px;
+            margin: 0 0 20px 0;
+            color: #ff4444;
+        }
+        
+        #restart-btn {
+            background: #ffaa44;
+            color: black;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+        
+        #restart-btn:hover {
+            background: #ffcc66;
+        }
+        
+        #controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: #ccc;
+            font-size: 12px;
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .warning {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            background: rgba(255,0,0,0.8);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-family: monospace;
+            animation: pulse 0.8s infinite;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        .distance-indicator {
+            position: absolute;
+            top: 120px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: #ffaa66;
+            font-family: monospace;
+            font-size: 14px;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-
-    <div id="ui">SCORE: <span id="scoreVal">0</span></div>
-    <div id="speedometer"><span id="kmh">0</span> <small style="font-size: 1rem;">KM/H</small></div>
-
-    <div id="game-over-screen">
-        <h1 style="font-size: 6rem; margin: 0;">BUSTED!</h1>
-        <p style="color: white; font-size: 1.5rem;">Zatrzymany przez policję.</p>
-        <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
+    <div id="ui">
+        <div>🚗 PRĘDKOŚĆ: <span id="speed">0</span> km/h</div>
+        <div>❤️ ŻYCIE: <span id="health">100</span>%</div>
+        <div>⭐ PUNKTY: <span id="score">0</span></div>
+        <div>🚨 POŚCIG: <span id="chase-level" style="color:#ffaa44;">⚪</span></div>
     </div>
-
+    <div id="minimap">
+        <canvas id="minimapCanvas" width="180" height="180"></canvas>
+    </div>
+    <div class="distance-indicator" id="distance-indicator">
+        📍 ODLEGŁOŚĆ DO POLICJI: <span id="police-distance">---</span> m
+    </div>
+    <div id="controls-hint">
+        🎮 WASD / Strzałki - jazda | SPACE - hamulec ręczny | R - restart
+    </div>
+    <div id="game-over">
+        <h1>🚔 ZŁAPANY! 🚔</h1>
+        <p>Twój wynik: <span id="final-score">0</span></p>
+        <button id="restart-btn">🔄 SPRÓBUJ PONOWNIE</button>
+    </div>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+    
     <script>
-        let scene, camera, renderer, player, police, road;
-        let roadLines = [];
-        let score = 0, isGameOver = false, keys = {};
+        // === INICJALIZACJA SCENY ===
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a1030);
+        scene.fog = new THREE.FogExp2(0x0a1030, 0.012);
         
-        // FIZYKA JAZDY
-        let currentSpeed = 0; 
-        const maxSpeed = 200;
-        const maxReverse = -40;
-        const acceleration = 0.8; 
-        const friction = 0.2; 
-        const braking = 1.2;
-
-        function init() {
-            scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x000000, 10, 80);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+        
+        // === OŚWIETLENIE ===
+        const ambientLight = new THREE.AmbientLight(0x4a5a6a);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffeedd, 1);
+        dirLight.position.set(10, 20, 5);
+        dirLight.castShadow = true;
+        dirLight.receiveShadow = true;
+        scene.add(dirLight);
+        const fillLight = new THREE.PointLight(0x6688aa, 0.5);
+        fillLight.position.set(0, 10, 0);
+        scene.add(fillLight);
+        
+        // === GŁÓWNY POJAZD (Gracz) ===
+        const playerGroup = new THREE.Group();
+        const bodyGeo = new THREE.BoxGeometry(1, 0.4, 1.8);
+        const bodyMat = new THREE.MeshPhongMaterial({ color: 0x33ff33, emissive: 0x226622 });
+        const playerBody = new THREE.Mesh(bodyGeo, bodyMat);
+        playerBody.castShadow = true;
+        playerGroup.add(playerBody);
+        
+        const roofGeo = new THREE.BoxGeometry(0.8, 0.3, 1.2);
+        const roofMat = new THREE.MeshPhongMaterial({ color: 0x222222 });
+        const roof = new THREE.Mesh(roofGeo, roofMat);
+        roof.position.y = 0.35;
+        playerGroup.add(roof);
+        
+        const headlight = new THREE.PointLight(0xffaa66, 1, 15);
+        headlight.position.set(0, 0.2, 1);
+        playerGroup.add(headlight);
+        
+        const taillight = new THREE.PointLight(0xff3333, 0.6, 12);
+        taillight.position.set(0, 0.2, -1);
+        playerGroup.add(taillight);
+        
+        scene.add(playerGroup);
+        
+        // === RADIOWÓZ POLICYJNY (TYLKO JEDEN) ===
+        const policeGroup = new THREE.Group();
+        const policeBodyGeo = new THREE.BoxGeometry(1, 0.45, 1.9);
+        const policeBodyMat = new THREE.MeshPhongMaterial({ color: 0x2266ff });
+        const policeBody = new THREE.Mesh(policeBodyGeo, policeBodyMat);
+        policeBody.castShadow = true;
+        policeGroup.add(policeBody);
+        
+        const policeRoofGeo = new THREE.BoxGeometry(0.85, 0.35, 1.3);
+        const policeRoofMat = new THREE.MeshPhongMaterial({ color: 0xffffff });
+        const policeRoof = new THREE.Mesh(policeRoofGeo, policeRoofMat);
+        policeRoof.position.y = 0.4;
+        policeGroup.add(policeRoof);
+        
+        // Światła policyjne (migające)
+        const policeLightLeft = new THREE.Mesh(new THREE.SphereGeometry(0.12), new THREE.MeshPhongMaterial({ color: 0xff0000 }));
+        policeLightLeft.position.set(-0.4, 0.55, 0.7);
+        policeGroup.add(policeLightLeft);
+        
+        const policeLightRight = new THREE.Mesh(new THREE.SphereGeometry(0.12), new THREE.MeshPhongMaterial({ color: 0x0000ff }));
+        policeLightRight.position.set(0.4, 0.55, 0.7);
+        policeGroup.add(policeLightRight);
+        
+        scene.add(policeGroup);
+        
+        // === GENEROWANIE MIASTA (BUDYNKI, DRZEWA, ULICE) ===
+        const buildings = [];
+        const trees = [];
+        
+        function createBuilding(x, z, width, depth, height, color) {
+            const buildingMat = new THREE.MeshPhongMaterial({ color: color });
+            const building = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), buildingMat);
+            building.position.set(x, height / 2, z);
+            building.castShadow = true;
+            building.receiveShadow = true;
+            scene.add(building);
+            buildings.push(building);
             
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 4, 8);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-
-            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-            const sun = new THREE.DirectionalLight(0xffffff, 1);
-            sun.position.set(5, 10, 5);
-            scene.add(sun);
-
-            // Droga
-            const roadGeo = new THREE.PlaneGeometry(20, 2000);
-            const roadMat = new THREE.MeshPhongMaterial({ color: 0x151515 });
-            road = new THREE.Mesh(roadGeo, roadMat);
-            road.rotation.x = -Math.PI / 2;
-            scene.add(road);
-
-            // Pasy na drodze
-            const lineGeo = new THREE.PlaneGeometry(0.4, 4);
-            const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            for(let i=0; i<50; i++) {
-                let line = new THREE.Mesh(lineGeo, lineMat);
-                line.position.set(0, 0.02, -i * 30);
-                line.rotation.x = -Math.PI / 2;
-                scene.add(line);
-                roadLines.push(line);
+            // Okna
+            const windowMat = new THREE.MeshPhongMaterial({ color: 0xffaa66, emissive: 0x442200 });
+            for(let wy = 1; wy < height; wy += 1.2) {
+                const windowGeo = new THREE.BoxGeometry(0.6, 0.6, 0.05);
+                const windowMesh = new THREE.Mesh(windowGeo, windowMat);
+                windowMesh.position.set(x + width/2 - 0.4, wy, z);
+                scene.add(windowMesh);
+                
+                const windowMesh2 = new THREE.Mesh(windowGeo, windowMat);
+                windowMesh2.position.set(x - width/2 + 0.4, wy, z);
+                scene.add(windowMesh2);
             }
-
-            // GRACZ
-            player = new THREE.Group();
-            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 2.4), new THREE.MeshPhongMaterial({ color: 0x00d4ff }));
-            player.add(body);
-            
-            // Światła STOP
-            const stopGeo = new THREE.BoxGeometry(0.3, 0.1, 0.1);
-            player.stopLightL = new THREE.Mesh(stopGeo, new THREE.MeshBasicMaterial({ color: 0x550000 }));
-            player.stopLightR = new THREE.Mesh(stopGeo, new THREE.MeshBasicMaterial({ color: 0x550000 }));
-            player.stopLightL.position.set(-0.4, 0.1, 1.2);
-            player.stopLightR.position.set(0.4, 0.1, 1.2);
-            player.add(player.stopLightL, player.stopLightR);
-            
-            player.position.y = 0.3;
-            scene.add(player);
-
-            // POLICJA
-            police = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.7, 2.5), new THREE.MeshPhongMaterial({ color: 0x111111 }));
-            police.position.set(0, 0.35, 15); 
-            scene.add(police);
-
-            const siren = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.3), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-            siren.position.y = 0.5;
-            police.add(siren);
-            police.siren = siren;
-
-            window.addEventListener('keydown', e => keys[e.code] = true);
-            window.addEventListener('keyup', e => keys[e.code] = false);
-
-            animate();
         }
-
-        function animate() {
-            if (isGameOver) return;
-            requestAnimationFrame(animate);
-
-            // LOGIKA PRĘDKOŚCI I COFANIA
-            let isBraking = false;
-
-            if (keys['ArrowUp'] || keys['KeyW']) {
-                currentSpeed += acceleration;
-            } else if (keys['ArrowDown'] || keys['KeyS']) {
-                if (currentSpeed > 0) {
-                    currentSpeed -= braking; // Hamowanie
-                    isBraking = true;
-                } else {
-                    currentSpeed -= acceleration / 2; // Cofanie
+        
+        function createTree(x, z) {
+            const trunkMat = new THREE.MeshPhongMaterial({ color: 0x8B5A2B });
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 1, 6), trunkMat);
+            trunk.position.set(x, 0.5, z);
+            trunk.castShadow = true;
+            scene.add(trunk);
+            
+            const leavesMat = new THREE.MeshPhongMaterial({ color: 0x44aa44 });
+            const leaves1 = new THREE.Mesh(new THREE.ConeGeometry(0.6, 0.8, 8), leavesMat);
+            leaves1.position.set(x, 1.1, z);
+            leaves1.castShadow = true;
+            scene.add(leaves1);
+            
+            const leaves2 = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.7, 8), leavesMat);
+            leaves2.position.set(x, 1.6, z);
+            leaves2.castShadow = true;
+            scene.add(leaves2);
+            
+            trees.push(trunk, leaves1, leaves2);
+        }
+        
+        function generateCity() {
+            // Drogi (asfalt)
+            const asphaltMat = new THREE.MeshPhongMaterial({ color: 0x2a2a2a });
+            for(let i = -25; i <= 25; i++) {
+                for(let j = -25; j <= 25; j++) {
+                    const isRoadX = Math.abs(i) < 3.5;
+                    const isRoadZ = Math.abs(j) < 3.5;
+                    if(isRoadX || isRoadZ) {
+                        const road = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 1), asphaltMat);
+                        road.position.set(i, -0.1, j);
+                        road.receiveShadow = true;
+                        scene.add(road);
+                    }
                 }
+            }
+            
+            // Linie na drodze
+            const lineMat = new THREE.MeshPhongMaterial({ color: 0xffdd88 });
+            for(let i = -24; i <= 24; i += 3) {
+                const line = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.05, 1.2), lineMat);
+                line.position.set(0, 0.05, i);
+                scene.add(line);
+                
+                const line2 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.2), lineMat);
+                line2.position.set(i, 0.05, 0);
+                scene.add(line2);
+            }
+            
+            // Chodniki (szare krawężniki)
+            const pavementMat = new THREE.MeshPhongMaterial({ color: 0x6a6a6a });
+            for(let i = -25; i <= 25; i++) {
+                if(Math.abs(i) > 3.8 && Math.abs(i) < 6) {
+                    const pavement = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 1), pavementMat);
+                    pavement.position.set(i, -0.05, 0);
+                    scene.add(pavement);
+                    
+                    const pavementZ = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 0.8), pavementMat);
+                    pavementZ.position.set(0, -0.05, i);
+                    scene.add(pavementZ);
+                }
+            }
+            
+            // Budynki
+            const buildingColors = [0x8a6e4b, 0x7a5e3b, 0x9a7e5b, 0x6a4e2b, 0x5a6e8b, 0x6a8a9a, 0x8a5a4a];
+            for(let x = -22; x <= 22; x += 5) {
+                for(let z = -22; z <= 22; z += 5) {
+                    if(Math.abs(x) < 4 && Math.abs(z) < 4) continue;
+                    if(Math.random() > 0.3) {
+                        const height = 1.5 + Math.random() * 3.5;
+                        const color = buildingColors[Math.floor(Math.random() * buildingColors.length)];
+                        createBuilding(x, z, 1.8, 1.8, height, color);
+                    }
+                }
+            }
+            
+            // Dodatkowe małe budynki
+            for(let i = 0; i < 40; i++) {
+                const x = (Math.random() - 0.5) * 48;
+                const z = (Math.random() - 0.5) * 48;
+                if(Math.abs(x) < 5 && Math.abs(z) < 5) continue;
+                if(Math.abs(x) > 24 || Math.abs(z) > 24) continue;
+                const height = 1 + Math.random() * 2;
+                createBuilding(x, z, 1.5, 1.5, height, 0x8a7a6a);
+            }
+            
+            // Drzewa
+            for(let i = 0; i < 80; i++) {
+                const x = (Math.random() - 0.5) * 44;
+                const z = (Math.random() - 0.5) * 44;
+                if(Math.abs(x) < 4.5 && Math.abs(z) < 4.5) continue;
+                if(Math.abs(x) < 25 && Math.abs(z) < 25) {
+                    createTree(x, z);
+                }
+            }
+            
+            // Trawa wokół
+            const grassMat = new THREE.MeshPhongMaterial({ color: 0x4a8a4a });
+            for(let i = -25; i <= 25; i++) {
+                for(let j = -25; j <= 25; j++) {
+                    if(Math.abs(i) > 3.5 && Math.abs(j) > 3.5) {
+                        const grass = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 1), grassMat);
+                        grass.position.set(i, -0.15, j);
+                        grass.receiveShadow = true;
+                        scene.add(grass);
+                    }
+                }
+            }
+        }
+        
+        generateCity();
+        
+        // === PARAMETRY GRY ===
+        let playerX = 0, playerZ = 0;
+        let playerAngle = 0;
+        let playerSpeed = 0;
+        let health = 100;
+        let score = 0;
+        let gameActive = true;
+        let frameCount = 0;
+        
+        // Pozycja policji
+        let policeX = 12, policeZ = 12;
+        let policeAngle = 0;
+        let policeSpeed = 0;
+        
+        // Sterowanie
+        const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, w: false, s: false, a: false, d: false, space: false };
+        
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowUp') keys.ArrowUp = true;
+            if(e.key === 'ArrowDown') keys.ArrowDown = true;
+            if(e.key === 'ArrowLeft') keys.ArrowLeft = true;
+            if(e.key === 'ArrowRight') keys.ArrowRight = true;
+            if(e.key === 'w') keys.w = true;
+            if(e.key === 's') keys.s = true;
+            if(e.key === 'a') keys.a = true;
+            if(e.key === 'd') keys.d = true;
+            if(e.key === ' ' || e.key === 'Space') { keys.space = true; e.preventDefault(); }
+            if(e.key === 'r' || e.key === 'R') restartGame();
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            if(e.key === 'ArrowUp') keys.ArrowUp = false;
+            if(e.key === 'ArrowDown') keys.ArrowDown = false;
+            if(e.key === 'ArrowLeft') keys.ArrowLeft = false;
+            if(e.key === 'ArrowRight') keys.ArrowRight = false;
+            if(e.key === 'w') keys.w = false;
+            if(e.key === 's') keys.s = false;
+            if(e.key === 'a') keys.a = false;
+            if(e.key === 'd') keys.d = false;
+            if(e.key === ' ' || e.key === 'Space') keys.space = false;
+        });
+        
+        function updatePlayer() {
+            if(!gameActive) return;
+            
+            let forward = (keys.ArrowUp || keys.w) ? 1 : (keys.ArrowDown || keys.s) ? -1 : 0;
+            let turn = (keys.ArrowLeft || keys.a) ? 1 : (keys.ArrowRight || keys.d) ? -1 : 0;
+            
+            // Przyspieszenie/opóźnienie (realistyczne)
+            if(forward !== 0) {
+                playerSpeed += forward * 0.12;
+                if(playerSpeed > 22) playerSpeed = 22;
+                if(playerSpeed < -10) playerSpeed = -10;
             } else {
-                // Tarcie (powolne zwalnianie do zera)
-                if (currentSpeed > 0.5) currentSpeed -= friction;
-                else if (currentSpeed < -0.5) currentSpeed += friction;
-                else currentSpeed = 0;
+                playerSpeed *= 0.98;
             }
-
-            // Ograniczenia
-            if (currentSpeed > maxSpeed) currentSpeed = maxSpeed;
-            if (currentSpeed < maxReverse) currentSpeed = maxReverse;
-
-            // Efekt świateł STOP
-            const stopColor = isBraking || currentSpeed < 0 ? 0xff0000 : 0x550000;
-            player.stopLightL.material.color.setHex(stopColor);
-            player.stopLightR.material.color.setHex(stopColor);
-
-            document.getElementById('kmh').innerText = Math.floor(currentSpeed);
-
-            // Skręcanie
-            if ((keys['ArrowLeft'] || keys['KeyA']) && player.position.x > -8) player.position.x -= 0.15;
-            if ((keys['ArrowRight'] || keys['KeyD']) && player.position.x < 8) player.position.x += 0.15;
-
-            // Ruch drogi
-            let moveStep = currentSpeed / 60; 
-            roadLines.forEach(line => {
-                line.position.z += moveStep;
-                if (line.position.z > 20) line.position.z = -130;
-                if (line.position.z < -130) line.position.z = 20;
-            });
-
-            // AI POLICJI - Bardziej zawzięte
-            let targetDist = (currentSpeed > 10) ? 2 : 4;
-            if (police.position.z > targetDist) police.position.z -= 0.08;
-            if (police.position.z < targetDist - 1) police.position.z += 0.05;
-            police.position.x += (player.position.x - police.position.x) * 0.1;
-
-            police.siren.material.color.setHex(Math.floor(Date.now() / 150) % 2 === 0 ? 0xff0000 : 0x0000ff);
-
-            // Kamera
-            camera.position.z = 8 + (Math.abs(currentSpeed) / 60);
-            camera.fov = 75 + (Math.abs(currentSpeed) / 15);
-            camera.updateProjectionMatrix();
-
-            // Kolizja
-            if (Math.abs(player.position.z - police.position.z) < 2.2 && 
-                Math.abs(player.position.x - police.position.x) < 1.1) {
-                endGame();
+            
+            // Hamulec ręczny
+            if(keys.space) {
+                playerSpeed *= 0.94;
             }
-
-            score += Math.abs(Math.floor(currentSpeed / 100));
-            document.getElementById('scoreVal').innerText = score;
+            
+            // Skręcanie - tylko przy prędkości
+            if(Math.abs(playerSpeed) > 0.5) {
+                playerAngle += turn * 0.045 * (Math.abs(playerSpeed) / 20);
+            }
+            
+            // Ruch
+            playerX += Math.sin(playerAngle) * playerSpeed * 0.08;
+            playerZ += Math.cos(playerAngle) * playerSpeed * 0.08;
+            
+            // Ograniczenia mapy
+            playerX = Math.max(-24, Math.min(24, playerX));
+            playerZ = Math.max(-24, Math.min(24, playerZ));
+            
+            playerGroup.position.set(playerX, 0.15, playerZ);
+            playerGroup.rotation.y = playerAngle;
+            
+            // Kamera za graczem
+            const camX = playerX - Math.sin(playerAngle) * 5.5;
+            const camZ = playerZ - Math.cos(playerAngle) * 5.5;
+            camera.position.x = camX;
+            camera.position.z = camZ;
+            camera.position.y = 3.2;
+            camera.lookAt(playerX, 0.5, playerZ);
+            
+            // Światła
+            headlight.intensity = 0.9 + Math.random() * 0.2;
+            taillight.intensity = playerSpeed < 0 ? 0.8 : 0.3;
+            
+            // Prędkość w UI
+            document.getElementById('speed').innerText = Math.floor(Math.abs(playerSpeed) * 4.5);
+        }
+        
+        function updatePoliceAI() {
+            if(!gameActive) return;
+            
+            // Oblicz dystans do gracza
+            const dx = playerX - policeX;
+            const dz = playerZ - policeZ;
+            const distance = Math.sqrt(dx*dx + dz*dz);
+            document.getElementById('police-distance').innerText = Math.floor(distance);
+            
+            // Poziom pościgu na podstawie dystansu
+            let chaseLevel = 0;
+            if(distance < 8) chaseLevel = 3;
+            else if(distance < 15) chaseLevel = 2;
+            else if(distance < 25) chaseLevel = 1;
+            
+            const chaseStars = ['⚪', '⚠️', '🚨⚠️', '🚨🚨'][chaseLevel];
+            document.getElementById('chase-level').innerHTML = chaseStars;
+            
+            // AI: kierunek w stronę gracza (ale nie idealnie - bardziej realistycznie)
+            const angleToPlayer = Math.atan2(dx, dz);
+            let targetAngle = angleToPlayer;
+            
+            // Dodaj losowość dla realizmu
+            targetAngle += (Math.random() - 0.5) * 0.2;
+            
+            // Płynna zmiana kąta
+            let angleDiff = targetAngle - policeAngle;
+            while(angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+            while(angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+            policeAngle += angleDiff * 0.05;
+            
+            // Prędkość policji - zależna od dystansu, ale NIE PRZEŚCIGA ŚWIATŁA (max 18)
+            let targetSpeed = 0;
+            if(distance < 5) targetSpeed = 12;  // blisko - zwalnia
+            else if(distance < 12) targetSpeed = 16; // pościg
+            else if(distance < 20) targetSpeed = 14;
+            else targetSpeed = 10;
+            
+            // Ograniczenie maksymalnej prędkości
+            targetSpeed = Math.min(targetSpeed, 17);
+            
+            // Płynne przyspieszanie
+            if(policeSpeed < targetSpeed) policeSpeed += 0.15;
+            else if(policeSpeed > targetSpeed) policeSpeed -= 0.1;
+            policeSpeed = Math.max(5, Math.min(17, policeSpeed));
+            
+            // Ruch policji
+            policeX += Math.sin(policeAngle) * policeSpeed * 0.08;
+            policeZ += Math.cos(policeAngle) * policeSpeed * 0.08;
+            
+            // Ograniczenia mapy
+            policeX = Math.max(-24, Math.min(24, policeX));
+            policeZ = Math.max(-24, Math.min(24, policeZ));
+            
+            policeGroup.position.set(policeX, 0.15, policeZ);
+            policeGroup.rotation.y = policeAngle;
+            
+            // Migające światła policyjne
+            const blink = Math.sin(Date.now() * 0.015) > 0;
+            policeLightLeft.material.color.setHex(blink ? 0xff0000 : 0x880000);
+            policeLightRight.material.color.setHex(blink ? 0x0000ff : 0x000088);
+            
+            // Kolizja z graczem
+            if(distance < 1.3 && gameActive) {
+                health -= 12;
+                if(health <= 0) {
+                    gameActive = false;
+                    document.getElementById('game-over').style.display = 'block';
+                    document.getElementById('final-score').innerText = Math.floor(score);
+                }
+                document.getElementById('health').innerText = Math.max(0, Math.floor(health));
+                
+                // Odrzucenie gracza
+                const pushAngle = Math.atan2(dx, dz);
+                playerX += Math.sin(pushAngle) * 1.8;
+                playerZ += Math.cos(pushAngle) * 1.8;
+                playerSpeed *= 0.5;
+                
+                // Efekt kolizji - dym
+                createSmokeEffect(playerX, playerZ);
+            }
+        }
+        
+        function createSmokeEffect(x, z) {
+            const smokeMat = new THREE.MeshPhongMaterial({ color: 0x888888 });
+            for(let i = 0; i < 5; i++) {
+                const smoke = new THREE.Mesh(new THREE.SphereGeometry(0.15, 4, 4), smokeMat);
+                smoke.position.set(x + (Math.random() - 0.5) * 1, 0.2, z + (Math.random() - 0.5) * 1);
+                scene.add(smoke);
+                setTimeout(() => scene.remove(smoke), 300);
+            }
+        }
+        
+        function updateScore() {
+            if(!gameActive) return;
+            // Punkty za prędkość i czas ucieczki
+            const speedBonus = Math.abs(playerSpeed) * 1.5;
+            const distanceToPolice = Math.hypot(playerX - policeX, playerZ - policeZ);
+            const escapeBonus = distanceToPolice < 10 ? 2 : 1;
+            score += (speedBonus * escapeBonus) * 0.03;
+            document.getElementById('score').innerText = Math.floor(score);
+            
+            // Regeneracja zdrowia gdy daleko od policji
+            if(distanceToPolice > 18 && health < 100 && frameCount % 40 === 0) {
+                health = Math.min(100, health + 1.5);
+                document.getElementById('health').innerText = Math.floor(health);
+            }
+        }
+        
+        function restartGame() {
+            playerX = 0;
+            playerZ = 0;
+            playerAngle = 0;
+            playerSpeed = 0;
+            health = 100;
+            score = 0;
+            gameActive = true;
+            
+            policeX = 12;
+            policeZ = 12;
+            policeAngle = 0;
+            policeSpeed = 8;
+            
+            document.getElementById('health').innerText = '100';
+            document.getElementById('score').innerText = '0';
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('police-distance').innerText = '---';
+        }
+        
+        // === MINIMAPA ===
+        const minimapCanvas = document.getElementById('minimapCanvas');
+        const minimapCtx = minimapCanvas.getContext('2d');
+        
+        function drawMinimap() {
+            minimapCtx.fillStyle = '#1a1a2e';
+            minimapCtx.fillRect(0, 0, 180, 180);
+            
+            // Rysowanie dróg (krzyż)
+            minimapCtx.fillStyle = '#444';
+            minimapCtx.fillRect(80, 0, 20, 180);
+            minimapCtx.fillRect(0, 80, 180, 20);
+            
+            // Rysowanie budynków (małe kwadraty)
+            minimapCtx.fillStyle = '#6a6a6a';
+            for(let x = -22; x <= 22; x += 5) {
+                for(let z = -22; z <= 22; z += 5) {
+                    if(Math.abs(x) < 5 && Math.abs(z) < 5) continue;
+                    const mx = ((x + 25) / 50) * 180;
+                    const mz = ((z + 25) / 50) * 180;
+                    minimapCtx.fillRect(mx-2, mz-2, 4, 4);
+                }
+            }
+            
+            // Rysowanie policji
+            const policeMapX = ((policeX + 25) / 50) * 180;
+            const policeMapZ = ((policeZ + 25) / 50) * 180;
+            minimapCtx.fillStyle = '#ff4444';
+            minimapCtx.beginPath();
+            minimapCtx.arc(policeMapX, policeMapZ, 6, 0, Math.PI * 2);
+            minimapCtx.fill();
+            
+            // Rysowanie gracza
+            const playerMapX = ((playerX + 25) / 50) * 180;
+            const playerMapZ = ((playerZ + 25) / 50) * 180;
+            minimapCtx.fillStyle = '#44ff44';
+            minimapCtx.beginPath();
+            minimapCtx.arc(playerMapX, playerMapZ, 7, 0, Math.PI * 2);
+            minimapCtx.fill();
+            
+            // Kierunek patrzenia
+            minimapCtx.strokeStyle = '#ffff44';
+            minimapCtx.beginPath();
+            minimapCtx.moveTo(playerMapX, playerMapZ);
+            minimapCtx.lineTo(playerMapX + Math.sin(playerAngle) * 12, playerMapZ + Math.cos(playerAngle) * 12);
+            minimapCtx.stroke();
+        }
+        
+        // === DŹWIĘK WIZUALNY (efekt dymu z opon) ===
+        function addTireSmoke() {
+            if(Math.abs(playerSpeed) > 12 && (keys.space || (Math.abs(playerSpeed) > 15 && Math.random() > 0.7))) {
+                const smokeMat = new THREE.MeshPhongMaterial({ color: 0xaa8866 });
+                const smoke = new THREE.Mesh(new THREE.SphereGeometry(0.12, 4, 4), smokeMat);
+                const backX = playerX - Math.sin(playerAngle) * 0.9;
+                const backZ = playerZ - Math.cos(playerAngle) * 0.9;
+                smoke.position.set(backX, 0.1, backZ);
+                scene.add(smoke);
+                setTimeout(() => scene.remove(smoke), 200);
+            }
+        }
+        
+        // === ANIMACJA ===
+        let lastTime = performance.now();
+        
+        function animate() {
+            const now = performance.now();
+            const delta = Math.min(0.033, (now - lastTime) / 1000);
+            lastTime = now;
+            
+            if(gameActive) {
+                updatePlayer();
+                updatePoliceAI();
+                updateScore();
+                addTireSmoke();
+                
+                // Efekt zagrożenia przy niskim zdrowiu
+                if(health < 30) {
+                    const intensity = 0.3 + Math.sin(Date.now() * 0.015) * 0.2;
+                    document.body.style.backgroundColor = `rgba(255,0,0,${intensity})`;
+                } else {
+                    document.body.style.backgroundColor = '';
+                }
+            }
+            
+            drawMinimap();
             renderer.render(scene, camera);
+            frameCount++;
+            requestAnimationFrame(animate);
         }
-
-        function endGame() {
-            isGameOver = true;
-            document.getElementById('game-over-screen').style.display = 'flex';
-        }
-
-        init();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        animate();
+        
+        // Komunikaty ostrzegawcze przy bliskiej odległości
+        setInterval(() => {
+            if(gameActive) {
+                const dist = Math.hypot(playerX - policeX, playerZ - policeZ);
+                if(dist < 8 && dist > 0) {
+                    const warningDiv = document.createElement('div');
+                    warningDiv.className = 'warning';
+                    warningDiv.innerHTML = '🚨 POLICJA JEST BLISKO! 🚨';
+                    document.body.appendChild(warningDiv);
+                    setTimeout(() => warningDiv.remove(), 1500);
+                }
+            }
+        }, 5000);
+        
+        console.log('Gra uruchomiona! Uciekaj przed radiowozem!');
     </script>
 </body>
 </html>
