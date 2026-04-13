@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Studio</title>
+    <style>
+        /* Styl dla całego dokumentu (czerwone tło i wyśrodkowanie) */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #FF0000; /* Czerwone tło */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial Black', Impact, sans-serif; /* Masywna czcionka */
+            overflow: hidden;
+        }
+
+        /* Styl dla pulsującego tekstu */
+        h1 {
+            color: #FFFFFF; /* Biały tekst */
+            font-size: 6vw; /* Rozmiar zależny od szerokości ekranu */
+            text-transform: uppercase; /* Duże litery */
+            text-align: center;
+            margin-bottom: 50px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Lekki obrys by poprawić widoczność */
+            
+            /* Przypisanie animacji o nazwie "pulse" */
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        /* Definicja animacji pulsowania (zmiana skali i przezroczystości) */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* Styl dla linku, który wygląda jak przycisk */
+        .btn {
+            color: #FF0000; /* Czerwony tekst na białym przycisku */
+            background-color: #FFFFFF; /* Białe tło przycisku */
+            padding: 20px 50px;
+            font-size: 2vw; /* Rozmiar zależny od ekranu */
+            text-decoration: none; /* Usunięcie domyślnego podkreślenia linku */
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 50px; /* Zaokrąglone rogi */
+            transition: all 0.3s ease; /* Płynne przejścia dla hover effect */
+            
+            /* Domyślny, lekki biały cień */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            border: 4px solid #FFFFFF;
+        }
+
+        /* Efekt "świecenia" po najechaniu myszką (hover) */
+        .btn:hover {
+            box-shadow: 0 0 40px rgba(255, 255, 255, 1), 0 0 80px rgba(255, 255, 255, 0.8); /* Mocniejsze białe świecenie */
+            background-color: transparent; /* Przezroczyste tło */
+            color: #FFFFFF; /* Biały tekst po najechaniu */
+            transform: translateY(-5px); /* Lekkie uniesienie przycisku */
+        }
+        
+        /* Dostosowanie dla mniejszych ekranów (telefonów) */
+        @media (max-width: 768px) {
+            h1 { font-size: 10vw; }
+            .btn { font-size: 5vw; padding: 15px 35px;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>VISIT MY STUDIO SITE</h1>
+
+    <a href="https://example.com" class="btn">CHECK IT</a>
+
+</body>
+</html>
